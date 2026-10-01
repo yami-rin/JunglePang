@@ -16,6 +16,7 @@
 .tower-platform { transform: translateX(-50%); height: 25px; border-radius: 50% 50% 7px 7px; background: #b99158; border-top: 5px solid #d5b87d; box-shadow: 0 8px 0 7px #295d3e2b; }
 .tower-particle { width: 6px; height: 6px; border-radius: 50%; background: #fff0b3; box-shadow: 12px -11px #ffe39a, 24px 12px #fff5cc; z-index: 8; }
 .tower-stack { position: absolute; inset: 0; pointer-events: none; }
+#game-canvas { isolation: isolate; }
 .title-ranking { font-size: 12px; padding: 7px; margin-top: 4px; }
 .result-ranking { margin: 10px 0 12px; }
 .result-ranking label { display: block; font-size: 10px; text-align: left; margin-bottom: 6px; }

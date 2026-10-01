@@ -363,6 +363,7 @@ test("small and tall screens keep the tower and buttons visible, with no overflo
     await page.locator("#home").click();
     await expect(page.locator("#result-screen")).toBeVisible();
     await expect(page.locator("#retry")).toBeInViewport();
+    await page.screenshot({path:`${evidenceDir}/result-${size.width}x${size.height}.png`,scale:'css'});
     await page.locator("#back-to-title").click();
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
