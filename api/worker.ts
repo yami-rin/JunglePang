@@ -1,5 +1,6 @@
 import { PangEngine, DEFAULT_RULES, type Animal } from '../src/engine';
 import { deviceType, type Device } from '../src/platform';
+import { isNgNickname, displayNickname, NG_NAME_MESSAGE } from '../src/name-policy';
 
 interface Statement {
   bind(...values: unknown[]): Statement;
@@ -65,6 +66,7 @@ export function nickname(value: unknown): string {
   if (typeof value !== 'string') throw new ApiError(400, 'ニックネームを入力してください');
   const name = value.normalize('NFKC').trim();
   if (!name || [...name].length > 12 || /[\p{C}<>]/u.test(name)) throw new ApiError(400, 'ニックネームは12文字以内で入力してください');
+  if (isNgNickname(name)) throw new ApiError(400, NG_NAME_MESSAGE);
   return name;
 }
 async function summary(db: Database, playerId: string, device: string): Promise<{ score: number; rank: number; device?: Device; deviceScore?: number; deviceRank?: number | null }> {
@@ -99,9 +101,9 @@ export async function handle(request: Request, env: Env, now = Date.now()): Prom
         ? 'SELECT id,nickname,score,hits,max_combo,achieved_at FROM players WHERE score>0'
         : 'SELECT player_id AS id,nickname,score,hits,max_combo,achieved_at FROM device_scores WHERE device=? AND score>0';
       const statement = env.DB.prepare(`WITH top AS (${sql} ORDER BY score DESC,achieved_at ASC,id ASC LIMIT 50) SELECT id,nickname,score,hits,max_combo,RANK() OVER(ORDER BY score DESC) AS rank FROM top ORDER BY score DESC,achieved_at ASC,id ASC`);
-      const { results } = await (category === 'all' ? statement : statement.bind(category)).all();
+      const { results } = await (category === 'all' ? statement : statement.bind(category)).all<{id:string;nickname:string;score:number;hits:number;max_combo:number;rank:number}>();
       headers['Cache-Control']='public, max-age=10';
-      return json({category,entries:results});
+      return json({category,entries:results.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}))});
     }
     if (request.method !== 'POST') throw new ApiError(404,'見つかりません');
     // Hash the IP with the date; raw addresses never enter the database.

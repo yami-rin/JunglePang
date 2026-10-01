@@ -1,6 +1,7 @@
 import config from './ranking-config.json';
 import type { InputRecord } from './engine';
 import { deviceType, type Device, type RankingCategory } from './platform';
+import { isNgNickname, displayNickname, NG_NAME_MESSAGE } from './name-policy';
 
 interface Identity { id: string; token: string; }
 export interface RankedRound { id: string; seed: number; rulesVersion: string; device?: Device; }
@@ -15,7 +16,7 @@ export class RankingClient {
     try {
       const value = JSON.parse(storage?.getItem(KEY) ?? 'null');
       if (value && typeof value.id === 'string' && /^[a-f0-9]{64}$/.test(value.token)) this.identity = {id:value.id,token:value.token};
-      if (value && typeof value.name === 'string') this.name = value.name.slice(0,12);
+      if (value && typeof value.name === 'string') this.name = displayNickname(value.name.slice(0,12));
     } catch { /* A blocked store does not prevent playing. */ }
   }
   get playerId(): string | undefined { return this.identity?.id; }
@@ -50,8 +51,12 @@ export class RankingClient {
     await this.identify();
     return this.api<RankedRound>('/api/rounds',{ device: deviceType(navigator.userAgent, navigator.maxTouchPoints, (navigator as Navigator & {userAgentData?: {mobile:boolean}}).userAgentData?.mobile) },true);
   }
-  async list(category: RankingCategory = 'all'): Promise<Entry[]> { return (await this.api<{entries:Entry[]}>(`/api/ranking?category=${category}`)).entries; }
+  async list(category: RankingCategory = 'all'): Promise<Entry[]> {
+    const {entries} = await this.api<{entries:Entry[]}>(`/api/ranking?category=${category}`);
+    return entries.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}));
+  }
   async submit(round: RankedRound, name: string, log: InputRecord[]): Promise<SubmittedScore> {
+    if (isNgNickname(name)) throw new Error(NG_NAME_MESSAGE);
     const inputs = log.filter(record=>record.outcome === 'correct' || record.outcome === 'wrong').map(({at,input})=>({at,input}));
     const result = await this.api<SubmittedScore>('/api/scores',{roundId:round.id,nickname:name,inputs},true);
     this.name=name; this.persist(); return result;

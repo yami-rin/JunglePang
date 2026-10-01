@@ -16,6 +16,7 @@
 - DB: 同名のCloudflare D1。`wrangler.toml` の専用DBへ接続し、他のアプリのDBは利用しない
 - API反映: 認証済みの環境で `npm run deploy:api`。未適用migrationを実行してからWorkerを配信
 - ゲームURLは維持する。公開APIの設定は `src/ranking-config.json`
+- NGネーム辞書は `src/ng-names.json`。辞書を変更したらAPIを先に配信し、フロントも再ビルドして公開する。既存の名前は取得時に伏字にするため、DBのUPDATEや得点の削除は不要
 - API反映後に `/api/health`、`/api/ranking` と、通常の40秒ラウンドからの登録を確認する
 - 0.3.0のmigrationは既存の得点を残したまま端末別の表を追加する。APIを先に更新し、`/api/ranking?category=all|mobile|pc` の取得を確認してからゲームを公開する
 - `tests/ranking.test.ts` は実際のSQLをインメモリSQLiteへ実行して保存・並び順・改ざん・再送・期限・制限を検証する

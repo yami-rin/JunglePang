@@ -5,6 +5,24 @@ import config from '../../src/ranking-config.json' with { type: 'json' };
 // Authenticated live requests must not leave participant tokens in trace artifacts.
 test.use({trace:'off'});
 
+test('NG names from old responses and saved preferences are masked in all ranking tabs',async({page})=>{
+  await page.addInitScript(()=>localStorage.setItem('jungle-pang:ranking-v2',JSON.stringify({name:'おまんこ'})));
+  await page.route(`${config.apiURL}/api/ranking*`,route=>route.fulfill({json:{entries:[
+    {id:'old1',nickname:'おまんこ',score:160,rank:1},
+    {id:'old2',nickname:'う・ん・こ',score:120,rank:2},
+    {id:'good',nickname:'とうふ',score:90,rank:3},
+  ]}}));
+  await page.goto('./');
+  await expect(page.locator('#nickname')).toHaveValue('＊＊＊');
+  await page.locator('#ranking').click();
+  for(const category of ['全体','スマホ','PC']) {
+    await page.getByRole('tab',{name:category,exact:true}).click();
+    await expect(page.locator('#ranking-list .ranking-name')).toHaveText(['＊＊＊','＊＊＊','とうふ']);
+    await expect(page.locator('#ranking-list .ranking-score')).toHaveText(['160 pt','120 pt','90 pt']);
+    await expect(page.locator('#ranking-list .ranking-place')).toHaveText(['1','2','3']);
+  }
+});
+
 test('national ranking loads safely and recovers after a network failure', async ({page})=>{
   let requests=0;
   await page.route(`${config.apiURL}/api/ranking*`,async route=>{

@@ -5,6 +5,7 @@ import { handle, replay, nickname, type Database } from '../api/worker';
 import { PangEngine } from '../src/engine';
 import { roundAnimals } from '../src/animals';
 import { deviceType } from '../src/platform';
+import {MASKED_NICKNAME,NG_NAME_MESSAGE} from '../src/name-policy';
 
 function database(): Database {
   const sqlite = new DatabaseSync(':memory:');
@@ -38,6 +39,39 @@ const trace = (seed: number, hits: number) => {
   return engine.log.map(({at,input})=>({at,input}));
 };
 describe('shared national ranking', () => {
+  it('masks existing NG names in every category without changing scores, ranks or stored records',async()=>{
+    const env={DB:database()};
+    const records=[['old1','おまんこ',160],['old2','う・ん・こ',120],['good','とうふ',90]] as const;
+    for(const [id,name,score] of records) {
+      await env.DB.prepare('INSERT INTO players(id,token_hash,nickname,score,hits,max_combo,achieved_at) VALUES(?,?,?,?,16,16,5)').bind(id,id+'-hash',name,score).run();
+      for(const device of ['mobile','pc']) await env.DB.prepare('INSERT INTO device_scores(player_id,device,nickname,score,hits,max_combo,achieved_at) VALUES(?,?,?,?,16,16,5)').bind(id,device,name,score).run();
+    }
+    for(const category of ['all','mobile','pc']) {
+      const response=await handle(request(`/api/ranking?category=${category}`),env);
+      const {entries}=await response.json() as any;
+      expect(entries).toEqual(records.map(([id,name,score],index)=>({id,nickname:id==='good'?name:MASKED_NICKNAME,score,hits:16,max_combo:16,rank:index+1})));
+      expect(JSON.stringify(entries)).not.toContain('おまんこ');
+      expect(JSON.stringify(entries)).not.toContain('う・ん・こ');
+    }
+    expect(await env.DB.prepare('SELECT nickname,score FROM players WHERE id=?').bind('old1').first()).toMatchObject({nickname:'おまんこ',score:160});
+    expect(await env.DB.prepare('SELECT nickname,score FROM device_scores WHERE player_id=? AND device=?').bind('old2','mobile').first()).toMatchObject({nickname:'う・ん・こ',score:120});
+  });
+  it('rejects NG names on the server without consuming the round so a corrected name can register',async()=>{
+    const env={DB:database()}; const time=100000;
+    const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
+    const round=await (await handle(request('/api/rounds',{device:'mobile'},player.token),env,time)).json() as any;
+    for(const name of ['おまんこ','う ん こ','ｳﾝｺ']) {
+      const response=await handle(request('/api/scores',{roundId:round.id,nickname:name,inputs:trace(round.seed,1)},player.token),env,time+41000);
+      expect(response.status).toBe(400);
+      expect(await response.json()).toEqual({error:NG_NAME_MESSAGE});
+    }
+    expect(await env.DB.prepare('SELECT consumed FROM rounds WHERE id=?').bind(round.id).first()).toMatchObject({consumed:null});
+    expect(await env.DB.prepare('SELECT score FROM players WHERE id=?').bind(player.id).first()).toMatchObject({score:0});
+    expect(await env.DB.prepare('SELECT COUNT(*) AS count FROM device_scores').first()).toMatchObject({count:0});
+    const corrected=await handle(request('/api/scores',{roundId:round.id,nickname:'とうふ',inputs:trace(round.seed,1)},player.token),env,time+42000);
+    expect(corrected.status).toBe(200);
+    expect(await corrected.json()).toMatchObject({score:10,deviceScore:10});
+  });
   it('returns only the top fifty and preserves equal-score ranks at the boundary',async()=>{
     const env={DB:database()};
     for(let i=0;i<100;i++) await env.DB.prepare('INSERT INTO players(id,token_hash,nickname,score,achieved_at) VALUES(?,?,?,?,?)').bind('p'+i,'hash'+i,'参加者'+i,Math.floor(i/2)*10,i).run();
