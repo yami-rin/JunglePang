@@ -1,5 +1,6 @@
 import { test, expect, type Page } from "@playwright/test";
 import { mkdir, writeFile } from "node:fs/promises";
+const evidenceDir = process.env.PANG_EVIDENCE_DIR ?? "artifacts";
 
 interface Snapshot {
   phase: string;
@@ -46,7 +47,8 @@ const correctTap = async (page: Page) => {
 };
 
 test.beforeEach(async ({ page }) => {
-  await page.goto("/?debug=1");
+  // Keep the deployment's directory (for example /JunglePang/ on Pages).
+  await page.goto("./?debug=1");
   await expect(page.locator("#start")).toBeEnabled();
 });
 
@@ -196,8 +198,8 @@ test("bottom row falls with the tower while accepting the next tap", async ({ pa
   expect(motion.second.renderTarget).toBe(motion.second.queue[0]);
   expect(motion.samples.some(sample => sample.y > motion.samples[0].y + 1)).toBe(true);
   expect(motion.settled.tower[0].y).toBeCloseTo(motion.settled.tower[0].restY, 2);
-  await mkdir("artifacts", { recursive: true });
-  await writeFile(`artifacts/fall-${testInfo.project.name}.json`, JSON.stringify(motion, null, 2));
+  await mkdir(evidenceDir, { recursive: true });
+  await writeFile(`${evidenceDir}/fall-${testInfo.project.name}.json`, JSON.stringify(motion, null, 2));
 });
 
 test("bottom row respects reduced motion without delaying scoring", async ({ page }) => {
@@ -252,9 +254,9 @@ test("15 inputs per second do not double-count or lose taps", async ({
   expect(state.misses).toBe(0);
   expect(state.log).toHaveLength(90);
   expect(state.score).toBe(2580);
-  await mkdir("artifacts", { recursive: true });
+  await mkdir(evidenceDir, { recursive: true });
   await writeFile(
-    `artifacts/input-${testInfo.project.name}.json`,
+    `${evidenceDir}/input-${testInfo.project.name}.json`,
     JSON.stringify(
       {
         testedAt: new Date().toISOString(),
@@ -337,6 +339,7 @@ test("sound preferences survive reload; corrupt or unavailable storage does not 
 test("small and tall screens keep the tower and buttons visible, with no overflow", async ({
   page,
 }) => {
+  await mkdir(evidenceDir, { recursive: true });
   for (const size of [
     { width: 320, height: 568 },
     { width: 360, height: 640 },
@@ -354,7 +357,7 @@ test("small and tall screens keep the tower and buttons visible, with no overflo
       ),
     ).toBe(true);
     await page.screenshot({
-      path: `artifacts/play-${size.width}x${size.height}.png`,
+      path: `${evidenceDir}/play-${size.width}x${size.height}.png`,
       scale: "css",
     });
     await page.locator("#home").click();
@@ -363,6 +366,6 @@ test("small and tall screens keep the tower and buttons visible, with no overflo
     await page.locator("#back-to-title").click();
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
-  await page.screenshot({ path: "artifacts/title-desktop.png", scale: "css" });
-  await page.locator("#app").screenshot({ path: "artifacts/title-preview.png", scale: "css" });
+  await page.screenshot({ path: `${evidenceDir}/title-desktop.png`, scale: "css" });
+  await page.locator("#app").screenshot({ path: `${evidenceDir}/title-preview.png`, scale: "css" });
 });
