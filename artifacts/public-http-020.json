@@ -1,0 +1,96 @@
+{
+  "url": "https://yami-rin.github.io/JunglePang/",
+  "version": "0.2.0",
+  "checkedAt": "2026-10-01T12:23:49.200Z",
+  "sourceCommit": "60885af3c952192514f5b3ce1936b565db8168cd",
+  "results": [
+    {
+      "path": "art/chick.svg",
+      "status": 200,
+      "bytes": 803,
+      "localHash": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d",
+      "deployedHash": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d",
+      "matches": true
+    },
+    {
+      "path": "art/elephant.svg",
+      "status": 200,
+      "bytes": 1040,
+      "localHash": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816",
+      "deployedHash": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816",
+      "matches": true
+    },
+    {
+      "path": "art/favicon.svg",
+      "status": 200,
+      "bytes": 208,
+      "localHash": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac",
+      "deployedHash": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac",
+      "matches": true
+    },
+    {
+      "path": "art/frog.svg",
+      "status": 200,
+      "bytes": 825,
+      "localHash": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d",
+      "deployedHash": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d",
+      "matches": true
+    },
+    {
+      "path": "art/hippo.svg",
+      "status": 200,
+      "bytes": 805,
+      "localHash": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f",
+      "deployedHash": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f",
+      "matches": true
+    },
+    {
+      "path": "art/jungle.svg",
+      "status": 200,
+      "bytes": 2710,
+      "localHash": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c",
+      "deployedHash": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c",
+      "matches": true
+    },
+    {
+      "path": "art/monkey.svg",
+      "status": 200,
+      "bytes": 1437,
+      "localHash": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1",
+      "deployedHash": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1",
+      "matches": true
+    },
+    {
+      "path": "art/tiger.svg",
+      "status": 200,
+      "bytes": 1430,
+      "localHash": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d",
+      "deployedHash": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d",
+      "matches": true
+    },
+    {
+      "path": "assets/index-B-pU66Bi.js",
+      "status": 200,
+      "bytes": 23097,
+      "localHash": "2cc08f94ef2bca6c4f073ca365c4947be0e3269069be57fc25a14c7331434193",
+      "deployedHash": "2cc08f94ef2bca6c4f073ca365c4947be0e3269069be57fc25a14c7331434193",
+      "matches": true
+    },
+    {
+      "path": "assets/index-DxtbnBUq.css",
+      "status": 200,
+      "bytes": 18427,
+      "localHash": "3ca4e3bb6a6207c85c730b3d21711bf276c8e52e94ad7d0e0679c0da6a649b2a",
+      "deployedHash": "3ca4e3bb6a6207c85c730b3d21711bf276c8e52e94ad7d0e0679c0da6a649b2a",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 10391,
+      "localHash": "1d0565b6cd3343a20045bbeb25985eb50884a4121c1930dcad4935a4e0490459",
+      "deployedHash": "1d0565b6cd3343a20045bbeb25985eb50884a4121c1930dcad4935a4e0490459",
+      "matches": true
+    }
+  ]
+}
