@@ -1,0 +1,12 @@
+{
+  "durationMs": 40000,
+  "missLockMs": 650,
+  "visiblePieces": 6,
+  "basePoints": 10,
+  "comboStep": 10,
+  "comboBonus": 5,
+  "maxBonusSteps": 6,
+  "countdownMs": 1800,
+  "popDurationMs": 180,
+  "logLimit": 4096
+}

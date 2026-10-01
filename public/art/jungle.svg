@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 480 880" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#e5edbb"/><stop offset=".55" stop-color="#b3d5a0"/><stop offset="1" stop-color="#528e68"/></linearGradient>
+    <linearGradient id="trunk" x2="1" y2="0"><stop stop-color="#437b5b"/><stop offset="1" stop-color="#64956a"/></linearGradient>
+    <radialGradient id="sun"><stop stop-color="#fcf4c7" stop-opacity=".85"/><stop offset="1" stop-color="#fcf4c7" stop-opacity="0"/></radialGradient>
+    <path id="leaf" d="M0 0C-64-3-103-43-109-110C-52-95-11-69 0 0Z"/>
+    <path id="fern" d="M0 0Q-42-69-35-136Q-10-91 0-52Q8-123 39-154Q36-77 15-44Q49-100 94-105Q67-44 29-24Q85-59 127-39Q73-6 0 0Z"/>
+  </defs>
+  <path fill="url(#sky)" d="M0 0H480V880H0Z"/>
+  <circle cx="260" cy="200" r="280" fill="url(#sun)"/>
+  <path d="M127 0L234 589L302 0M350 0L284 551L454 0" fill="#f9f3c0" opacity=".16"/>
+  <g fill="#80af80" opacity=".35">
+    <path d="M75 750Q80 396 62 240L45 0H76L98 255Q99 475 103 750ZM365 753L384 280L391 0H415L409 356L401 753Z"/>
+    <use href="#fern" transform="translate(47 440) scale(1.2)"/><use href="#fern" transform="translate(442 490) scale(-1.2 1.2)"/>
+  </g>
+  <g fill="url(#trunk)">
+    <path d="M-24 880L-6 283L9 0H52L36 274L55 880ZM428 880L450 330L428 0H472L491 377L503 880Z"/>
+  </g>
+  <g fill="#6b9b65" opacity=".65">
+    <use href="#leaf" transform="translate(30 169) rotate(70) scale(1.8)"/><use href="#leaf" transform="translate(454 192) rotate(-65) scale(-1.8 1.8)"/>
+    <use href="#leaf" transform="translate(60 260) rotate(100) scale(1.2)"/><use href="#leaf" transform="translate(439 342) rotate(-100) scale(-1.4 1.4)"/>
+    <use href="#fern" transform="translate(18 679) scale(1.1)"/><use href="#fern" transform="translate(474 733) scale(-1.1 1.1)"/>
+  </g>
+  <path d="M0 790Q90 746 180 794Q321 748 480 794V880H0Z" fill="#609269"/>
+  <path d="M0 836Q141 800 257 840Q379 806 480 822V880H0Z" fill="#427a59"/>
+  <g fill="#306346">
+    <use href="#fern" transform="translate(25 880) rotate(-10) scale(1.2)"/>
+    <use href="#fern" transform="translate(450 900) rotate(10) scale(-1.4 1.4)"/>
+    <use href="#leaf" transform="translate(26 78) rotate(74) scale(1.55)"/>
+    <use href="#leaf" transform="translate(449 81) rotate(-70) scale(-1.55 1.55)"/>
+  </g>
+  <g fill="none" stroke="#34694c" stroke-width="4" opacity=".75"><path d="M67 0Q106 122 60 180Q40 215 80 249M413 0Q381 161 423 242Q459 290 411 350"/></g>
+  <g fill="#f6e3a0" opacity=".6"><circle cx="83" cy="372" r="3"/><circle cx="387" cy="529" r="2"/><circle cx="118" cy="699" r="2"/><circle cx="351" cy="271" r="2"/><circle cx="72" cy="595" r="2"/></g>
+</svg>

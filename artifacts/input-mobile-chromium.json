@@ -1,0 +1,750 @@
+{
+  "testedAt": "2026-10-01T10:29:30.139Z",
+  "browserName": "chromium",
+  "project": "mobile-chromium",
+  "seed": 123,
+  "inputHz": 15,
+  "inputs": 90,
+  "result": {
+    "phase": "running",
+    "screen": "playing",
+    "queue": [
+      "tiger",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey",
+      "tiger"
+    ],
+    "score": 2580,
+    "combo": 90,
+    "hits": 90,
+    "misses": 0,
+    "result": null,
+    "remaining": 33972.10000002384,
+    "log": [
+      {
+        "at": 65.20000004768372,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 10,
+        "combo": 1
+      },
+      {
+        "at": 75.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 20,
+        "combo": 2
+      },
+      {
+        "at": 148.39999997615814,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 30,
+        "combo": 3
+      },
+      {
+        "at": 215,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 40,
+        "combo": 4
+      },
+      {
+        "at": 280.7000000476837,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 50,
+        "combo": 5
+      },
+      {
+        "at": 344.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 60,
+        "combo": 6
+      },
+      {
+        "at": 414.39999997615814,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 70,
+        "combo": 7
+      },
+      {
+        "at": 481.60000002384186,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 80,
+        "combo": 8
+      },
+      {
+        "at": 548.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 90,
+        "combo": 9
+      },
+      {
+        "at": 610.2000000476837,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 105,
+        "combo": 10
+      },
+      {
+        "at": 681.3999999761581,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 120,
+        "combo": 11
+      },
+      {
+        "at": 747.8999999761581,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 135,
+        "combo": 12
+      },
+      {
+        "at": 811.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 150,
+        "combo": 13
+      },
+      {
+        "at": 876,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 165,
+        "combo": 14
+      },
+      {
+        "at": 948.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 180,
+        "combo": 15
+      },
+      {
+        "at": 1014.8000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 195,
+        "combo": 16
+      },
+      {
+        "at": 1081.1000000238419,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 210,
+        "combo": 17
+      },
+      {
+        "at": 1147.3999999761581,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 225,
+        "combo": 18
+      },
+      {
+        "at": 1213.6000000238419,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 240,
+        "combo": 19
+      },
+      {
+        "at": 1277.3999999761581,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 260,
+        "combo": 20
+      },
+      {
+        "at": 1348.2000000476837,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 280,
+        "combo": 21
+      },
+      {
+        "at": 1414.3000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 300,
+        "combo": 22
+      },
+      {
+        "at": 1477.3000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 320,
+        "combo": 23
+      },
+      {
+        "at": 1547.8000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 340,
+        "combo": 24
+      },
+      {
+        "at": 1614.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 360,
+        "combo": 25
+      },
+      {
+        "at": 1678.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 380,
+        "combo": 26
+      },
+      {
+        "at": 1748.2000000476837,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 400,
+        "combo": 27
+      },
+      {
+        "at": 1808.8999999761581,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 420,
+        "combo": 28
+      },
+      {
+        "at": 1874.3999999761581,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 440,
+        "combo": 29
+      },
+      {
+        "at": 1949.7000000476837,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 465,
+        "combo": 30
+      },
+      {
+        "at": 2014.3000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 490,
+        "combo": 31
+      },
+      {
+        "at": 2077.7000000476837,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 515,
+        "combo": 32
+      },
+      {
+        "at": 2148.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 540,
+        "combo": 33
+      },
+      {
+        "at": 2214.600000023842,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 565,
+        "combo": 34
+      },
+      {
+        "at": 2277.100000023842,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 590,
+        "combo": 35
+      },
+      {
+        "at": 2347.600000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 615,
+        "combo": 36
+      },
+      {
+        "at": 2414.8000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 640,
+        "combo": 37
+      },
+      {
+        "at": 2478.100000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 665,
+        "combo": 38
+      },
+      {
+        "at": 2547.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 690,
+        "combo": 39
+      },
+      {
+        "at": 2614.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 720,
+        "combo": 40
+      },
+      {
+        "at": 2677.399999976158,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 750,
+        "combo": 41
+      },
+      {
+        "at": 2748.2000000476837,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 780,
+        "combo": 42
+      },
+      {
+        "at": 2814,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 810,
+        "combo": 43
+      },
+      {
+        "at": 2878,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 840,
+        "combo": 44
+      },
+      {
+        "at": 2948.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 870,
+        "combo": 45
+      },
+      {
+        "at": 3014.8000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 900,
+        "combo": 46
+      },
+      {
+        "at": 3078.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 930,
+        "combo": 47
+      },
+      {
+        "at": 3148.100000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 960,
+        "combo": 48
+      },
+      {
+        "at": 3213.8000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 990,
+        "combo": 49
+      },
+      {
+        "at": 3281.7000000476837,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1025,
+        "combo": 50
+      },
+      {
+        "at": 3342.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1060,
+        "combo": 51
+      },
+      {
+        "at": 3415.100000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1095,
+        "combo": 52
+      },
+      {
+        "at": 3480.8000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1130,
+        "combo": 53
+      },
+      {
+        "at": 3547.600000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1165,
+        "combo": 54
+      },
+      {
+        "at": 3614.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1200,
+        "combo": 55
+      },
+      {
+        "at": 3681.600000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1235,
+        "combo": 56
+      },
+      {
+        "at": 3743.7000000476837,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1270,
+        "combo": 57
+      },
+      {
+        "at": 3814.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1305,
+        "combo": 58
+      },
+      {
+        "at": 3881.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1340,
+        "combo": 59
+      },
+      {
+        "at": 3943.3000000715256,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1380,
+        "combo": 60
+      },
+      {
+        "at": 4015,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1420,
+        "combo": 61
+      },
+      {
+        "at": 4081.3000000715256,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1460,
+        "combo": 62
+      },
+      {
+        "at": 4144.600000023842,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1500,
+        "combo": 63
+      },
+      {
+        "at": 4215.300000071526,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1540,
+        "combo": 64
+      },
+      {
+        "at": 4281.300000071526,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1580,
+        "combo": 65
+      },
+      {
+        "at": 4345.300000071526,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1620,
+        "combo": 66
+      },
+      {
+        "at": 4414.399999976158,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1660,
+        "combo": 67
+      },
+      {
+        "at": 4481.100000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1700,
+        "combo": 68
+      },
+      {
+        "at": 4545.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1740,
+        "combo": 69
+      },
+      {
+        "at": 4614.600000023842,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1780,
+        "combo": 70
+      },
+      {
+        "at": 4680.899999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1820,
+        "combo": 71
+      },
+      {
+        "at": 4746.200000047684,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1860,
+        "combo": 72
+      },
+      {
+        "at": 4815.200000047684,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 1900,
+        "combo": 73
+      },
+      {
+        "at": 4881.399999976158,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1940,
+        "combo": 74
+      },
+      {
+        "at": 4945.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 1980,
+        "combo": 75
+      },
+      {
+        "at": 5014.200000047684,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2020,
+        "combo": 76
+      },
+      {
+        "at": 5081.700000047684,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2060,
+        "combo": 77
+      },
+      {
+        "at": 5142.300000071526,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2100,
+        "combo": 78
+      },
+      {
+        "at": 5214.399999976158,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2140,
+        "combo": 79
+      },
+      {
+        "at": 5281.100000023842,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2180,
+        "combo": 80
+      },
+      {
+        "at": 5347.899999976158,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2220,
+        "combo": 81
+      },
+      {
+        "at": 5410.300000071526,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2260,
+        "combo": 82
+      },
+      {
+        "at": 5481.5,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2300,
+        "combo": 83
+      },
+      {
+        "at": 5547.800000071526,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2340,
+        "combo": 84
+      },
+      {
+        "at": 5610.800000071526,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2380,
+        "combo": 85
+      },
+      {
+        "at": 5681.300000071526,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2420,
+        "combo": 86
+      },
+      {
+        "at": 5747.800000071526,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2460,
+        "combo": 87
+      },
+      {
+        "at": 5812.200000047684,
+        "input": "tiger",
+        "target": "tiger",
+        "outcome": "correct",
+        "score": 2500,
+        "combo": 88
+      },
+      {
+        "at": 5876.399999976158,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2540,
+        "combo": 89
+      },
+      {
+        "at": 5948,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 2580,
+        "combo": 90
+      }
+    ],
+    "gameObjects": 27,
+    "renderTarget": "tiger"
+  }
+}
