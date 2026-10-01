@@ -7,7 +7,22 @@
 - 自動更新: `.github/workflows/pages.yml`。`main` のゲーム・検証・ビルド設定変更、または手動起動で実行
 - 公開前のcheck: `npm ci` → `npm test` → `npm run build`。失敗したビルドは公開しない
 
-スマホは縦画面でURLを開き、スタート後に左右の動物ボタンをタップする。PCや同じWi-Fiへの接続は不要。音は最初の操作で有効化される。記録は各端末・ブラウザ内に保存され、共有ランキングはない。
+スマホは縦画面でURLを開き、スタート後に左右の動物ボタンをタップする。PCや同じWi-Fiへの接続は不要。音は最初の操作で有効化される。端末内のベストに加え、任意でニックネームと完走記録を全国ランキングへ登録できる。
+
+## ランキングAPI
+
+- API: https://jungle-pang-ranking.y4m1r1n.workers.dev
+- Worker名: `jungle-pang-ranking`
+- DB: 同名のCloudflare D1。`wrangler.toml` の専用DBへ接続し、他のアプリのDBは利用しない
+- API反映: 認証済みの環境で `npm run deploy:api`。未適用migrationを実行してからWorkerを配信
+- ゲームURLは維持する。公開APIの設定は `src/ranking-config.json`
+- API反映後に `/api/health`、`/api/ranking` と、通常の40秒ラウンドからの登録を確認する
+- `tests/ranking.test.ts` は実際のSQLをインメモリSQLiteへ実行して保存・並び順・改ざん・再送・期限・制限を検証する
+- 通常の自動試験は公開得点を作らない。実配信への書込試験を明示有効化した際は、検証用IDだけの行を確認・削除する
+
+参加トークンを画面・ログ・Gitへ出さない。管理はCloudflareの既存認証から行い、アプリに管理APIや管理トークンは置かない。公開するデータと不正対策の限界は [仕様](specification.md) を参照。
+
+Cloudflareの公式資料: [D1のWorker API](https://developers.cloudflare.com/d1/worker-api/)。
 
 ## 反映確認
 
@@ -16,6 +31,8 @@ Actionsの成功だけで完了とせず、公開URLを認証なしで読み込�
 ## 復旧と公開停止
 
 不具合が出た場合は変更したcommitを `git revert` して `main` に通常pushし、前のゲーム内容を再公開する。履歴を改変しない。以前のバージョンを試すだけなら、ソースを別の作業ディレクトリへcheckoutしてローカルでビルドする。
+
+APIだけを戻す場合は以前のソースで `wrangler deploy`、またはCloudflareのWorkerバージョンからロールバックする。DBを削除しない。migrationの巻戻しは得点が失われる可能性があるため、Time Travelなどのバックアップと対象を確認して別途行う。停止する場合はWorkerの配信を停止し、フロントのAPI URLを空文字にして再ビルドすれば端末内だけで遊べる。
 
 公開を止める場合は、このrepositoryの Settings → Pages → Unpublish site を実行し、自動更新workflowを無効化する。公開URLは利用不能になる。再開時はPagesのSourceをGitHub Actionsに設定し、workflowを有効化して手動実行する。
 

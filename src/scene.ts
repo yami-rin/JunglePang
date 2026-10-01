@@ -1,190 +1,132 @@
-import Phaser from "phaser";
-import type { Animal } from "./engine";
-import { DEFAULT_RULES } from "./engine";
+import type { Animal } from './engine';
+import { DEFAULT_RULES } from './engine';
+import { ANIMALS, artURL, roundAnimals } from './animals';
 
-export class JungleScene extends Phaser.Scene {
-  private pieces: Phaser.GameObjects.Image[] = [];
-  private platform!: Phaser.GameObjects.Graphics;
-  private targetRing!: Phaser.GameObjects.Graphics;
-  private particles: Phaser.GameObjects.Arc[] = [];
-  private ready = false;
+/** Six SVG images; compositor animations run only when something changes. */
+export class JungleScene {
+  private pieces: HTMLImageElement[] = [];
+  private particles: HTMLSpanElement[] = [];
+  private platform = document.createElement('div');
+  private ring = document.createElement('div');
+  private stack = document.createElement('div');
+  private dropAnimation: Animation | null = null;
+  private sources: string[] = [];
   private current: Animal[] = [];
-  private reducedMotion = matchMedia("(prefers-reduced-motion: reduce)")
-    .matches;
-  private tileWidth = 120;
+  private art = roundAnimals(42);
+  private artSources = { monkey: artURL(this.art.monkey), tiger: artURL(this.art.tiger) };
   private pitch = 60;
+  private tileWidth = 120;
   private bottomY = 0;
-  private world!: Phaser.GameObjects.Container;
+  private width = 0;
+  private height = 0;
+  private ready = false;
+  private reducedMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
   onReady: (() => void) | null = null;
-  onFrame: (() => void) | null = null;
   onFailure: (() => void) | null = null;
 
-  constructor(private readonly pixelRatio = 1) {
-    super("Jungle");
+  constructor(private readonly host: HTMLElement) {}
+  async mount(): Promise<void> {
+    try {
+      await Promise.all(ANIMALS.map(async art => {
+        const image = new Image();
+        image.src = artURL(art);
+        await image.decode();
+      }));
+      this.platform.className = 'tower-platform';
+      this.ring.className = 'tower-ring';
+      this.stack.className = 'tower-stack';
+      this.pieces = Array.from({ length: DEFAULT_RULES.visiblePieces }, (_, i) => {
+        const image = document.createElement('img');
+        image.className = 'tower-piece'; image.alt = ''; image.draggable = false;
+        image.style.zIndex = String(7-i);
+        if (i === 5) image.style.opacity = '.86';
+        return image;
+      });
+      this.particles = Array.from({ length: 8 }, () => {
+        const particle = document.createElement('span');
+        particle.className = 'tower-particle'; particle.hidden = true;
+        return particle;
+      });
+      this.stack.replaceChildren(...this.pieces);
+      this.host.replaceChildren(this.platform, this.ring, this.stack, ...this.particles);
+      this.ready = true;
+      this.resize(this.host.clientWidth, this.host.clientHeight);
+      this.onReady?.();
+    } catch { this.onFailure?.(); }
   }
-  private get worldWidth(): number {
-    return this.scale.width / this.pixelRatio;
+  setAnimals(seed: number): void {
+    this.art = roundAnimals(seed);
+    this.artSources = { monkey: artURL(this.art.monkey), tiger: artURL(this.art.tiger) };
+    if (this.current.length) this.sync(this.current);
   }
-  private get worldHeight(): number {
-    return this.scale.height / this.pixelRatio;
-  }
-  preload(): void {
-    const base = import.meta.env.BASE_URL;
-    this.load.svg("monkey", `${base}art/monkey.svg`, {
-      width: 400,
-      height: 264,
-    });
-    this.load.svg("tiger", `${base}art/tiger.svg`, { width: 400, height: 264 });
-    this.load.on("loaderror", () => this.onFailure?.());
-  }
-  create(): void {
-    if (!this.textures.exists("monkey") || !this.textures.exists("tiger")) {
-      this.onFailure?.();
-      return;
-    }
-    this.platform = this.add.graphics();
-    this.targetRing = this.add.graphics();
-    this.pieces = Array.from({ length: DEFAULT_RULES.visiblePieces }, () =>
-      this.add.image(0, 0, "monkey"),
-    );
-    // Reuse a fixed particle pool. Rapid input cannot accumulate game objects.
-    this.particles = Array.from({ length: 18 }, () =>
-      this.add.circle(0, 0, 3, 0xfff0b3).setVisible(false).setDepth(8),
-    );
-    this.world = this.add.container(0, 0, [
-      this.platform,
-      this.targetRing,
-      ...[...this.pieces].reverse(),
-      ...this.particles,
-    ]);
-    this.world.setScale(this.pixelRatio);
-    this.ready = true;
-    this.scale.on("resize", () => this.layout());
-    this.layout();
-    this.onReady?.();
-  }
-  update(): void {
-    this.onFrame?.();
-  }
-
-  private layout(): void {
-    if (!this.ready) return;
-    const width = this.worldWidth;
-    const height = this.worldHeight;
-    const center = width / 2;
+  resize(width: number, height: number): void {
+    if (!this.ready || (this.width === width && this.height === height)) return;
+    this.width = width; this.height = height;
     this.pitch = Math.min(77, Math.max(23, (height - 63) / 6));
     this.tileWidth = Math.min(178, this.pitch * 1.95);
-    this.bottomY = height - 27 - this.tileWidth * 0.31;
-    this.platform.clear();
-    this.platform
-      .fillStyle(0x295d3e, 0.17)
-      .fillEllipse(center, height - 17, this.tileWidth + 53, 24);
-    this.platform
-      .fillStyle(0x856142)
-      .fillRoundedRect(
-        center - this.tileWidth * 0.46,
-        height - 33,
-        this.tileWidth * 0.92,
-        25,
-        7,
-      );
-    this.platform
-      .fillStyle(0xc49b62)
-      .fillEllipse(center, height - 33, this.tileWidth * 0.92, 20);
-    this.platform
-      .lineStyle(1.5, 0x8a7149, 0.5)
-      .strokeEllipse(center, height - 33, this.tileWidth * 0.68, 11);
-    this.platform
-      .lineStyle(1.5, 0xd5b87d, 0.6)
-      .strokeEllipse(center, height - 33, this.tileWidth * 0.44, 5);
-    this.targetRing.clear().lineStyle(2.5, 0xfff4c6, 0.85);
-    this.targetRing.strokeRoundedRect(
-      center - this.tileWidth * 0.55,
-      this.bottomY - this.tileWidth * 0.32,
-      this.tileWidth * 1.1,
-      this.tileWidth * 0.63,
-      16,
-    );
-    this.pieces.forEach((piece, i) => {
-      this.tweens.killTweensOf(piece);
-      piece
-        .setPosition(center, this.bottomY - i * this.pitch)
-        .setDisplaySize(this.tileWidth, this.tileWidth * 0.66);
-      piece.setDepth(7 - i).setAlpha(i === 5 ? 0.86 : 1);
-    });
+    this.bottomY = height - 27 - this.tileWidth * .31;
+    this.dropAnimation?.cancel();
+    this.dropAnimation = null;
+    Object.assign(this.platform.style, { width: `${this.tileWidth * .92}px`, left: `${width/2}px`, top: `${height-33}px` });
+    Object.assign(this.ring.style, { width: `${this.tileWidth*1.1}px`, height: `${this.tileWidth*.63}px`, left: `${width/2}px`, top: `${this.bottomY}px` });
+    for (let i=0; i<this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      Object.assign(piece.style, { width: `${this.tileWidth}px`, height: `${this.tileWidth*.66}px`, left: `${width/2}px`, top: `${this.bottomY-i*this.pitch}px` });
+    }
   }
-
   sync(queue: Animal[], animate = false): void {
     this.current = [...queue];
     if (!this.ready) return;
-    this.pieces.forEach((piece, i) => {
-      this.tweens.killTweensOf(piece);
-      piece.setTexture(queue[i]);
-      const targetY = this.bottomY - i * this.pitch;
-      piece
-        .setPosition(this.worldWidth / 2, targetY)
-        .setDisplaySize(this.tileWidth, this.tileWidth * 0.66);
-      // Update the target identity immediately, then drop every row together.
-      // Input remains available while the tower settles, including the bottom row.
-      if (animate && !this.reducedMotion) {
-        piece.y = targetY - this.pitch * 0.48;
-        this.tweens.add({
-          targets: piece,
-          y: targetY,
-          duration: 85,
-          ease: "Cubic.Out",
-        });
-      }
-    });
+    this.dropAnimation?.cancel();
+    this.dropAnimation = null;
+    for (let i=0; i<this.pieces.length; i++) {
+      const piece = this.pieces[i];
+      const url = this.artSources[queue[i]];
+      if (this.sources[i] !== url) { this.sources[i] = url; piece.src = url; }
+    }
+    if (animate && !this.reducedMotion) this.dropAnimation = this.stack.animate([
+      { transform: `translateY(-${this.pitch*.48}px)` },
+      { transform: 'translateY(0)' },
+    ], { duration: 85, easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)' });
   }
-
   pop(animal: Animal): void {
     if (!this.ready || this.reducedMotion) return;
-    const direction = animal === "monkey" ? -1 : 1;
-    const available = this.particles
-      .filter((particle) => !particle.visible)
-      .slice(0, 5);
-    available.forEach((particle, i) => {
-      particle.setPosition(
-        this.worldWidth / 2 + direction * this.tileWidth * 0.3,
-        this.bottomY,
-      );
-      particle
-        .setFillStyle(i % 2 ? 0xffe39a : 0xfff5cc)
-        .setVisible(true)
-        .setAlpha(1)
-        .setScale(1);
-      this.tweens.add({
-        targets: particle,
-        x: particle.x + direction * (38 + i * 12),
-        y: particle.y - 35 + i * 16,
-        alpha: 0,
-        scale: 0.3,
-        duration: DEFAULT_RULES.popDurationMs,
-        onComplete: () => particle.setVisible(false),
-      });
-    });
-  }
-
-  resetEffects(): void {
+    const direction = animal === 'monkey' ? -1 : 1;
     for (const particle of this.particles) {
-      this.tweens.killTweensOf(particle);
-      particle.setVisible(false);
+      if (!particle.hidden) continue;
+      particle.hidden = false;
+      particle.style.left = `${this.width/2+direction*this.tileWidth*.3}px`;
+      particle.style.top = `${this.bottomY}px`;
+      const animation = particle.animate([
+        { transform: `translate(0,0) scaleX(${direction})`, opacity: 1 },
+        { transform: `translate(${direction*54}px, -28px) scale(.3) scaleX(${direction})`, opacity: 0 },
+      ], { duration: 180 });
+      animation.onfinish = () => { particle.hidden = true; };
+      break;
     }
-    this.cameras.main.resetFX();
+  }
+  resetEffects(): void {
+    this.host.getAnimations().forEach(animation => animation.cancel());
+    for (const particle of this.particles) {
+      particle.getAnimations().forEach(animation => animation.cancel()); particle.hidden = true;
+    }
     if (this.current.length) this.sync(this.current);
   }
   miss(): void {
-    if (!this.reducedMotion) this.cameras.main.shake(180, 0.008);
+    if (!this.reducedMotion) this.host.animate([
+      {transform:'translateX(0)'},{transform:'translateX(-3px)'},{transform:'translateX(3px)'},{transform:'translateX(0)'},
+    ], {duration:180});
   }
-  target(): Animal | undefined {
-    return this.pieces[0]?.texture.key as Animal | undefined;
+  target(): Animal | undefined { return this.current[0]; }
+  objectCount(): number { return this.pieces.length + this.particles.length + 3; }
+  tower(): { animal: Animal; art: string; y: number; restY: number }[] {
+    const hostTop = this.host.getBoundingClientRect().top;
+    const moving = this.dropAnimation?.playState === 'running';
+    return this.pieces.map((piece,i) => {
+      const rect = piece.getBoundingClientRect();
+      const restY = this.bottomY-i*this.pitch;
+      return { animal: this.current[i], art: this.art[this.current[i]].id, y: moving ? rect.top-hostTop+rect.height/2 : restY, restY };
+    });
   }
-  tower(): { animal: Animal; y: number; restY: number }[] {
-    return this.pieces.map((piece, i) => ({
-      animal: piece.texture.key as Animal,
-      y: piece.y,
-      restY: this.bottomY - i * this.pitch,
-    }));
-  }
+  destroy(): void { this.resetEffects(); this.host.replaceChildren(); }
 }

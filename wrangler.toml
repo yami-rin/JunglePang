@@ -1,0 +1,12 @@
+name = "jungle-pang-ranking"
+main = "api/worker.ts"
+account_id = "0cc707e4717343ab5eb9e2c82ffbd616"
+compatibility_date = "2026-10-01"
+workers_dev = true
+preview_urls = false
+
+[[d1_databases]]
+binding = "DB"
+database_name = "jungle-pang-ranking"
+database_id = "82a6a32c-63ed-4a67-91a4-cc8e153286ba"
+migrations_dir = "api/migrations"

@@ -1,0 +1,79 @@
+{
+  "baselineVersion": "0.1.1",
+  "version": "0.2.0",
+  "uncompressedJavaScript": {
+    "before": 1215222,
+    "after": 23097,
+    "reductionPercent": 98.09935962317996
+  },
+  "currentGzipJavaScript": 8937,
+  "profiles": {
+    "desktop-chromium": {
+      "before": {
+        "hits": 90,
+        "inputMs": {
+          "median": 0.2999999523162842,
+          "p95": 0.5,
+          "max": 38.699999928474426
+        },
+        "frameMs": {
+          "median": 8.300000000000182,
+          "p95": 8.5,
+          "max": 33.30000000000007
+        },
+        "frames": 715,
+        "jsHeapBytes": 15313310
+      },
+      "after": {
+        "hits": 90,
+        "inputMs": {
+          "median": 0.5,
+          "p95": 0.8999999761581421,
+          "max": 11.100000023841858
+        },
+        "frameMs": {
+          "median": 8.300000000000182,
+          "p95": 8.5,
+          "max": 8.500000000000455
+        },
+        "frames": 721,
+        "jsHeapBytes": 3530811
+      },
+      "heapReductionPercent": 76.94286212451782
+    },
+    "mobile-chromium": {
+      "before": {
+        "hits": 90,
+        "inputMs": {
+          "median": 0.2999999523162842,
+          "p95": 0.5,
+          "max": 39.89999997615814
+        },
+        "frameMs": {
+          "median": 8.300000000000182,
+          "p95": 8.5,
+          "max": 33.19999999999993
+        },
+        "frames": 717,
+        "jsHeapBytes": 15407579
+      },
+      "after": {
+        "hits": 90,
+        "inputMs": {
+          "median": 0.3999999761581421,
+          "p95": 0.6000000238418579,
+          "max": 8.5
+        },
+        "frameMs": {
+          "median": 8.300000000000182,
+          "p95": 8.5,
+          "max": 8.5
+        },
+        "frames": 721,
+        "jsHeapBytes": 3586761
+      },
+      "heapReductionPercent": 76.7208008474271
+    }
+  },
+  "conditions": "Same Windows Chromium 151, desktop and Pixel 7 emulation; 90 synthetic inputs over 6 seconds. One sample per profile; not physical phone latency or a long heap profile."
+}

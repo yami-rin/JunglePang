@@ -1,24 +1,28 @@
 {
   "name": "jungle-pang",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.12.0" },
+  "engines": {
+    "node": ">=22.12.0"
+  },
   "scripts": {
     "dev": "vite --host 0.0.0.0 --port 5177 --strictPort",
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview --host 0.0.0.0 --port 5177 --strictPort",
     "test": "vitest run",
     "test:e2e": "playwright test",
+    "dev:api": "wrangler dev --port 8787",
+    "deploy:api": "wrangler d1 migrations apply jungle-pang-ranking --remote && wrangler deploy",
     "verify": "npm run test && npm run build && npm run test:e2e",
     "start": "node tools/serve.mjs",
     "package": "npm run build && node tools/package.mjs"
   },
-  "dependencies": { "phaser": "3.90.0" },
   "devDependencies": {
     "@playwright/test": "1.63.0",
     "typescript": "5.9.3",
     "vite": "8.3.1",
-    "vitest": "5.0.3"
+    "vitest": "5.0.3",
+    "wrangler": "4.145.0"
   }
 }

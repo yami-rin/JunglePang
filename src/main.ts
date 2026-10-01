@@ -1,10 +1,11 @@
-import Phaser from "phaser";
 import "./style.css";
 import { PangEngine, DEFAULT_RULES, type Animal } from "./engine";
 import { bindInputs } from "./input";
 import { PangStorage } from "./storage";
 import { PangAudio } from "./audio";
 import { JungleScene } from "./scene";
+import { roundAnimals, artURL } from './animals';
+import { RankingClient, type RankedRound } from './ranking';
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => {
   const node = document.getElementById(id);
@@ -45,7 +46,15 @@ try {
 }
 const storage = new PangStorage(backend);
 const audio = new PangAudio(storage.value);
+const ranking = new RankingClient(backend);
+const debugMode = new URLSearchParams(location.search).get('debug') === '1';
+let rankedRound: RankedRound | null = null;
+let roundEpoch = 0;
+let rankingReason = '';
+let loadingRanking = false;
+el<HTMLInputElement>('nickname').value = ranking.name;
 let engine = new PangEngine(42);
+let roundSeed = 42;
 let screen: "loading" | "ready" | "countdown" | "playing" | "finished" =
   "loading";
 let countdownStarted = 0;
@@ -56,9 +65,34 @@ let savedResult = false;
 let warningSecond = 0;
 let displayedSeconds = -1;
 let displayedScore = -1;
+let displayedCombo = -1;
+let scheduledFrame = 0;
+let lastFrameHud = 0;
 const pressTimers: Partial<Record<Animal, ReturnType<typeof setTimeout>>> = {};
-const pixelRatio = Math.min(devicePixelRatio || 1, 2);
-const scene = new JungleScene(pixelRatio);
+const scene = new JungleScene(el('game-canvas'));
+
+function configureAnimals(seed: number): void {
+  const animals = roundAnimals(seed);
+  scene.setAnimals(seed);
+  for (const slot of ['monkey','tiger'] as const) {
+    const art = animals[slot];
+    const button = ui[slot];
+    button.querySelector('img')!.src = artURL(art);
+    button.querySelector('.animal-name')!.textContent = art.name;
+    button.setAttribute('aria-label', `${slot === 'monkey' ? '左' : '右'}の${art.name}を選ぶ`);
+    button.style.background = art.light;
+    button.style.borderColor = art.color;
+    button.dataset.animal = art.id;
+  }
+}
+function scheduleFrame(): void {
+  if (scheduledFrame) return;
+  scheduledFrame = requestAnimationFrame(() => {
+    scheduledFrame = 0;
+    frame();
+    if (screen === 'countdown' || screen === 'playing' || (screen === 'finished' && !resultShown)) scheduleFrame();
+  });
+}
 
 function showStorageStatus(): void {
   el("storage-note").hidden = storage.available;
@@ -110,7 +144,10 @@ function updateHud(now: number): void {
     "visible",
     engine.combo >= 3 && screen === "playing",
   );
-  ui.comboCount.textContent = String(engine.combo);
+  if (displayedCombo !== engine.combo) {
+    displayedCombo = engine.combo;
+    ui.comboCount.textContent = String(engine.combo);
+  }
   ui.lock.hidden = engine.phase !== "locked";
   if (engine.phase === "locked")
     ui.lockFill.style.transform = `scaleX(${Math.max(0, (engine.lockUntil - now) / engine.rules.missLockMs)})`;
@@ -129,7 +166,22 @@ function startRound(): void {
   audio.unlock();
   audio.stopAll();
   const seed = crypto.getRandomValues(new Uint32Array(1))[0];
+  const epoch = ++roundEpoch;
+  rankedRound = null;
+  rankingReason = debugMode ? '検証モードの記録は全国に登録できません' : '接続が間に合わなかったため、今回は端末の記録のみです';
+  if (!debugMode) void ranking.start().then(round => {
+    if (epoch !== roundEpoch || screen !== 'countdown' || performance.now()-countdownStarted >= DEFAULT_RULES.countdownMs) return;
+    if (round.rulesVersion !== '2') { rankingReason='ページを再読み込みしてからもう一度プレイしてください'; return; }
+    rankedRound = round;
+    roundSeed = round.seed;
+    engine = new PangEngine(round.seed);
+    configureAnimals(round.seed);
+    scene.sync(engine.queue);
+    rankingReason = '';
+  }).catch(() => { if (epoch === roundEpoch) rankingReason = '通信できないため、今回は端末の記録のみです'; });
+  roundSeed = seed;
   engine = new PangEngine(seed);
+  configureAnimals(seed);
   scene.resetEffects();
   scene.sync(engine.queue);
   resultShown = false;
@@ -144,11 +196,16 @@ function startRound(): void {
   ui.start.blur();
   el("retry").blur();
   frame();
+  scheduleFrame();
 }
 function showTitle(): void {
+  roundEpoch++;
+  rankedRound = null;
   audio.stopAll();
   resultShown = false;
   engine = new PangEngine(42);
+  roundSeed = 42;
+  configureAnimals(42);
   scene.resetEffects();
   scene.sync(engine.queue);
   setScreen("ready");
@@ -190,6 +247,9 @@ function endRound(): void {
         : result.maxCombo >= 50
           ? "すごい集中力。ジャングルの達人！"
           : "もう一回、いけそう？";
+  el('ranking-form').hidden = !result.eligible || !rankedRound || result.score === 0;
+  el<HTMLButtonElement>('submit-score').disabled = false;
+  el('ranking-status').textContent = !result.eligible ? '中断した記録は全国に登録できません' : result.score === 0 ? '1回以上正解すると全国に登録できます' : rankingReason || '40秒完走！ニックネームで記録を登録できます';
   updateBest();
 }
 function presentResult(): void {
@@ -218,7 +278,7 @@ function frame(): void {
   }
   if (screen === "playing") {
     engine.advance(now);
-    updateHud(now);
+    if (now-lastFrameHud >= 32) { updateHud(now); lastFrameHud = now; }
     if (engine.phase === "finished") endRound();
   } else if (screen === "finished" && !resultShown && now - endingAt >= 550)
     presentResult();
@@ -295,6 +355,54 @@ ui.music.addEventListener("change", () => {
   storage.update({ music: ui.music.checked });
   updatePreferences();
 });
+
+async function loadRanking(): Promise<void> {
+  if (loadingRanking) return;
+  loadingRanking = true;
+  const status = el('ranking-load-status');
+  status.textContent = '読み込み中…';
+  el<HTMLButtonElement>('refresh-ranking').disabled = true;
+  try {
+    const entries = await ranking.list();
+    const rows = entries.map(entry => {
+      const row = document.createElement('li');
+      if (entry.id === ranking.playerId) row.className = 'my-record';
+      for (const [className,value] of [['ranking-place',`${entry.rank}`],['ranking-name',entry.nickname],['ranking-score',`${formatter.format(entry.score)} pt`]]) {
+        const cell = document.createElement('span'); cell.className = className; cell.textContent = value; row.append(cell);
+      }
+      return row;
+    });
+    el('ranking-list').replaceChildren(...rows);
+    status.textContent = entries.length ? '全国の最新記録' : 'まだ記録がありません。最初のチャレンジャーになろう！';
+  } catch { status.textContent = '通信できません。「更新」で再試行できます'; }
+  finally { loadingRanking = false; el<HTMLButtonElement>('refresh-ranking').disabled = false; }
+}
+for (const button of document.querySelectorAll('.ranking-open')) button.addEventListener('click',()=>{
+  if (screen === 'playing') { engine.finish('quit',performance.now()); endRound(); presentResult(); }
+  else if (screen === 'countdown') showTitle();
+  el<HTMLDialogElement>('ranking-dialog').showModal();
+  void loadRanking();
+});
+el('refresh-ranking').addEventListener('click',()=>void loadRanking());
+el('ranking-form').addEventListener('submit',event=>{
+  event.preventDefault();
+  if (!rankedRound || !engine.result?.eligible) return;
+  const round = rankedRound; const currentEngine = engine;
+  const button = el<HTMLButtonElement>('submit-score');
+  if (button.disabled) return;
+  button.disabled = true;
+  el('ranking-status').textContent = '記録を登録しています…';
+  const name = el<HTMLInputElement>('nickname').value.trim() || '名無しのパング';
+  void ranking.submit(round,name,engine.log).then(result=>{
+    if (currentEngine !== engine) return;
+    el('ranking-form').hidden = true;
+    el('ranking-status').textContent = `全国 ${result.rank}位 · 最高記録 ${formatter.format(result.score)} pt を登録しました`;
+  }).catch(error=>{
+    if (currentEngine !== engine) return;
+    el('ranking-status').textContent = error instanceof Error ? error.message : '通信できません。もう一度登録できます';
+    button.disabled = false;
+  });
+});
 function interrupt(): void {
   audio.stopAll();
   if (screen === "countdown") showTitle();
@@ -320,33 +428,16 @@ scene.onReady = () => {
   setScreen("ready");
   updateHud(performance.now());
 };
-scene.onFrame = frame;
 scene.onFailure = () => {
   el("fatal-error").hidden = false;
   audio.stopAll();
 };
 updatePreferences();
 updateBest();
-const game = new Phaser.Game({
-  type: Phaser.AUTO,
-  parent: "game-canvas",
-  transparent: true,
-  scale: {
-    mode: Phaser.Scale.NONE,
-    width: el("game-canvas").clientWidth * pixelRatio,
-    height: el("game-canvas").clientHeight * pixelRatio,
-  },
-  scene: [scene],
-  banner: false,
-  audio: { noAudio: true },
-  input: { keyboard: false, mouse: false, touch: false },
-  render: { antialias: true, pixelArt: false },
-});
+configureAnimals(42);
+void scene.mount();
 const resize = new ResizeObserver(([entry]) => {
-  game.scale.resize(
-    Math.round(entry.contentRect.width * pixelRatio),
-    Math.round(entry.contentRect.height * pixelRatio),
-  );
+  scene.resize(entry.contentRect.width, entry.contentRect.height);
 });
 resize.observe(el("game-canvas"));
 
@@ -365,22 +456,19 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
         result: engine.result,
         remaining: engine.remaining(performance.now()),
         log: [...engine.log],
-        gameObjects:
-          scene.children.length +
-          scene.children.list.reduce(
-            (count, object) =>
-              count +
-              (object instanceof Phaser.GameObjects.Container
-                ? object.length
-                : 0),
-            0,
-          ),
+        gameObjects: scene.objectCount(),
+        animals: roundAnimals(roundSeed),
         renderTarget: scene.target(),
         tower: scene.tower(),
       }),
       reset: (seed = 1) => {
+        roundEpoch++;
+        rankedRound = null;
+        rankingReason = '検証モードの記録は全国に登録できません';
         audio.stopAll();
         engine = new PangEngine(seed);
+        roundSeed = seed;
+        configureAnimals(seed);
         resultShown = false;
         savedResult = false;
         scene.resetEffects();
@@ -388,6 +476,7 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
         engine.start(performance.now());
         setScreen("playing");
         updateHud(performance.now());
+        scheduleFrame();
       },
       expire: () => {
         engine.advance(engine.deadline);
@@ -405,5 +494,6 @@ if (import.meta.hot)
   import.meta.hot.dispose(() => {
     resize.disconnect();
     audio.stopAll();
-    game.destroy(true);
+    cancelAnimationFrame(scheduledFrame);
+    scene.destroy();
   });

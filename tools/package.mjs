@@ -14,18 +14,13 @@ await mkdir(outputRoot, { recursive: true });
 await rm(bundle, { recursive: true, force: true });
 await mkdir(resolve(bundle, "tools"), { recursive: true });
 await mkdir(resolve(bundle, "licenses"), { recursive: true });
-for (const file of ["README.md", "START-JUNGLE-PANG.cmd", "index.html", "docs", "dist", "artifacts", "src", "public", "tests", "package.json", "package-lock.json", "tsconfig.json", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", ".gitignore", ".gitattributes"])
+for (const file of ["README.md", "START-JUNGLE-PANG.cmd", "index.html", "docs", "dist", "artifacts", "src", "wrangler.toml", "public", "tests", "package.json", "package-lock.json", "tsconfig.json", "vite.config.ts", "vitest.config.ts", "playwright.config.ts", ".gitignore", ".gitattributes"])
   await cp(resolve(project, file), resolve(bundle, file), { recursive: true });
-for (const file of ["serve.mjs", "start.ps1", "package.mjs"])
+await mkdir(resolve(bundle, "api"), { recursive: true });
+await cp(resolve(project, "api/worker.ts"), resolve(bundle, "api/worker.ts"));
+await cp(resolve(project, "api/migrations"), resolve(bundle, "api/migrations"), { recursive: true });
+for (const file of ["serve.mjs", "start.ps1", "package.mjs", "measure-build.mjs"])
   await cp(resolve(project, "tools", file), resolve(bundle, "tools", file));
-await cp(
-  resolve(project, "node_modules/phaser/LICENSE.md"),
-  resolve(bundle, "licenses/Phaser-MIT.txt"),
-);
-await cp(
-  resolve(project, "node_modules/eventemitter3/LICENSE"),
-  resolve(bundle, "licenses/EventEmitter3-MIT.txt"),
-);
 const version = JSON.parse(
   await readFile(resolve(project, "package.json"), "utf8"),
 ).version;

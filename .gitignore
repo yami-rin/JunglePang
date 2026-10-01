@@ -6,3 +6,5 @@ playwright-report/
 *.log
 artifacts/*.webm
 release/
+.wrangler/
+api/.dev.vars
