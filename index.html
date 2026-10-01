@@ -4,16 +4,16 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#254d3c" />
-    <meta name="description" content="最下段と同じ動物をタップ。40秒の小さな反射神経ゲーム。" />
+    <meta name="description" content="最下段と同じ動物のボタンを押す40秒のゲーム。スマホ・PC対応。" />
     <link rel="icon" type="image/svg+xml" href="./art/favicon.svg" />
-    <title>Jungle Pang — 40秒のジャングルチャレンジ</title>
+    <title>Jungle Pang</title>
   </head>
   <body>
-    <div class="desktop-note" aria-hidden="true"><span class="side-line"></span><span>A LITTLE BREAK.<br />A WILD CHALLENGE.</span><span class="side-line"></span></div>
     <main class="game-shell" id="app" data-screen="loading">
       <header class="topbar">
         <button id="home" class="wordmark" aria-label="タイトルに戻る">JUNGLE<span>PANG<span class="wordmark-dot">.</span></span></button>
         <div class="top-actions">
+          <button id="quick-retry" class="icon-button" aria-label="すぐにやり直す" title="すぐにやり直す" hidden><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 4V10H14M20 10A8 8 0 1 0 19 17"/></svg></button>
           <button id="ranking" class="icon-button ranking-open" aria-label="全国ランキング"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M7 3H17V9Q17 15 12 15Q7 15 7 9ZM7 5H3V8Q3 11 8 11M17 5H21V8Q21 11 16 11M12 15V20M7 21H17"/></svg></button>
           <button id="sound" class="icon-button" aria-label="音をミュート" aria-pressed="false">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4L6 8H3V16H6L11 20Z"/><path class="sound-on" d="M15 8Q19 12 15 16M18 5Q25 12 18 19"/><path class="sound-off" d="M16 9L22 15M22 9L16 15"/></svg>
@@ -32,51 +32,47 @@
       <section class="arena" aria-label="動物の塔">
         <div id="game-canvas"></div>
         <div class="combo" id="combo" aria-hidden="true"><strong id="combo-count">0</strong><span>COMBO!</span></div>
-        <div class="target-hint" id="target-hint"><span>この子と同じボタン</span><svg viewBox="0 0 24 24"><path d="M3 12H21M14 5L21 12L14 19"/></svg></div>
+        <div class="target-hint" id="target-hint"><span>最下段と同じボタン</span><svg viewBox="0 0 24 24"><path d="M3 12H21M14 5L21 12L14 19"/></svg></div>
         <div id="feedback" class="feedback" aria-live="polite"></div>
         <div id="countdown" class="countdown" hidden aria-live="assertive"></div>
-        <div id="lock" class="lock-message" hidden><span class="lock-stars">✦　✧　✦</span><strong>おっと、ちがう子！</strong><span>ひと呼吸おこう</span><div class="lock-track"><div id="lock-fill"></div></div></div>
+        <div id="lock" class="lock-message" hidden><strong>ミス</strong><span>0.65秒間入力できません</span><div class="lock-track"><div id="lock-fill"></div></div></div>
       </section>
 
       <footer class="controls-area">
-        <div class="play-hint" id="play-hint">いちばん下の子を見て、タップ！</div>
+        <div class="play-hint" id="play-hint">最下段と同じ動物のボタンを押す</div>
         <div class="controls">
           <button id="monkey" class="animal-button monkey-button" aria-label="左のサルを選ぶ" disabled><span class="key-tag">← / A</span><img src="./art/monkey.svg" alt="" draggable="false" /><span class="button-name"><b class="animal-name">サル</b><span>LEFT</span></span></button>
           <button id="tiger" class="animal-button tiger-button" aria-label="右のトラを選ぶ" disabled><span class="key-tag">→ / D</span><img src="./art/tiger.svg" alt="" draggable="false" /><span class="button-name"><b class="animal-name">トラ</b><span>RIGHT</span></span></button>
         </div>
-        <div class="footer-note">40 SECONDS. TWO BUTTONS. ONE MORE TRY.</div>
       </footer>
 
       <section class="screen-overlay" id="title-screen" aria-labelledby="title-heading">
         <div class="title-content">
-          <div class="eyebrow"><span></span>THE 40-SECOND CHALLENGE<span></span></div>
           <h1 id="title-heading">JUNGLE<br /><span>PANG<span class="title-spark">✦</span></span></h1>
-          <p class="title-catch">6種類の動物。今日はどのふたり？</p>
-          <div class="hero-animals"><div class="hero-circle monkey-circle"><img src="./art/monkey.svg" alt="サル" /></div><span class="hero-vs">&amp;</span><div class="hero-circle tiger-circle"><img src="./art/tiger.svg" alt="トラ" /></div><span class="hero-leaf">✦</span></div>
-          <div class="howto-card"><span class="howto-number">01</span><p>塔の<span>いちばん下</span>を見て</p><span class="howto-number">02</span><p><span>同じ動物のボタン</span>をタップ</p><div class="howto-foot">ミスすると少しお休み。時間は止まらない！</div></div>
+          <div class="hero-animals"><div class="hero-circle monkey-circle"><img id="hero-left" src="./art/monkey.svg" alt="サル" /></div><span class="hero-vs">&amp;</span><div class="hero-circle tiger-circle"><img id="hero-right" src="./art/tiger.svg" alt="トラ" /></div></div>
+          <button class="animal-picker-open" id="choose-animals" type="button">動物を選ぶ <span id="animal-selection-summary">毎回ランダム</span></button>
+          <div class="howto-card"><span class="howto-number">01</span><p>塔の<span>最下段</span>を見る</p><span class="howto-number">02</span><p><span>同じ動物のボタン</span>を押す</p><div class="howto-foot">制限時間40秒 · ミスで0.65秒間入力停止</div></div>
           <button class="primary-button" id="start" disabled><span>読み込み中…</span><svg viewBox="0 0 24 24"><path d="M5 12H19M13 6L19 12L13 18"/></svg></button>
-          <div class="title-best">YOUR BEST <strong id="title-best">0</strong> <span>pt</span></div>
+          <div class="title-best">自己ベスト <strong id="title-best">0</strong> <span>pt</span></div>
           <button class="text-button ranking-open title-ranking">全国ランキングを見る</button>
-          <p class="edition-note">独自の動物と音で作った、非公式の再現版</p>
           <p class="storage-note" id="storage-note" hidden>この環境では記録を保存できません</p>
         </div>
       </section>
 
       <section class="screen-overlay result-overlay" id="result-screen" hidden aria-labelledby="result-heading">
         <div class="result-content">
-          <div class="eyebrow">NICE PANG!</div>
-          <h2 id="result-heading">おつかれさま！</h2>
-          <p id="result-message">もう一回、いけそう？</p>
+          <h2 id="result-heading">結果</h2>
+          <p id="result-message" hidden></p>
           <div class="result-medal"><img src="./art/tiger.svg" alt=""/><span>✦</span></div>
           <div class="result-score-label">YOUR SCORE</div>
           <div class="result-score"><strong id="result-score">0</strong><span>pt</span></div>
-          <div class="best-badge" id="new-best" hidden>NEW PERSONAL BEST</div>
+          <div class="best-badge" id="new-best" hidden>自己ベスト更新</div>
           <div class="result-stats"><div><strong id="result-hits">0</strong><span>正解</span></div><div><strong id="result-combo">0</strong><span>最大コンボ</span></div><div><strong id="result-accuracy">0%</strong><span>正解率</span></div></div>
-          <div class="result-best">MY BEST <strong id="result-best">0</strong><span>pt</span></div>
+          <div class="result-best">自己ベスト <strong id="result-best">0</strong><span>pt</span></div>
           <div class="result-ranking" id="result-ranking">
             <form id="ranking-form" hidden>
               <label for="nickname">公開するニックネーム（12文字まで）</label>
-              <div class="ranking-submit-row"><input id="nickname" maxlength="12" placeholder="名無しのパング" autocomplete="off" /><button id="submit-score" type="submit">全国に登録</button></div>
+              <div class="ranking-submit-row"><input id="nickname" maxlength="12" placeholder="名無し" autocomplete="off" /><button id="submit-score" type="submit">記録を登録</button></div>
             </form>
             <p id="ranking-status" role="status"></p>
             <button class="text-button ranking-open">全国ランキングを見る</button>
@@ -91,20 +87,30 @@
         <form method="dialog"><div class="dialog-heading"><h2 id="settings-heading">音と遊び方</h2><button class="icon-button" aria-label="設定を閉じる">×</button></div></form>
         <label class="volume-label" for="volume">音量<span id="volume-value">45%</span></label><input id="volume" type="range" min="0" max="100" value="45" />
         <label class="check-label"><input type="checkbox" id="music" checked />リズムBGM</label>
-        <p class="dialog-help">6種類から毎回2種類を抽選します。<br />スマホは左右の動物をタップ。<br />PCは <kbd>←</kbd> <kbd>→</kbd> または <kbd>A</kbd> <kbd>D</kbd>。<br />押しっぱなしは1回だけ数えます。</p>
+        <p class="dialog-help">動物は開始画面で選べます。<br />スマホは左右の動物をタップ。<br />PCは <kbd>←</kbd> <kbd>→</kbd> または <kbd>A</kbd> <kbd>D</kbd>。<br />押しっぱなしは1回だけ数えます。</p>
         <p class="dialog-small">画面を離れるとプレイは終了します。<br />中断したスコアは自己ベストに記録されません。</p>
         <form method="dialog"><button class="primary-button">とじる</button></form>
       </dialog>
       <dialog id="ranking-dialog" aria-labelledby="ranking-heading">
         <form method="dialog"><div class="dialog-heading"><h2 id="ranking-heading">全国ランキング</h2><button class="icon-button" aria-label="ランキングを閉じる">×</button></div></form>
-        <p class="ranking-description">全国TOP 50 · 各端末の最高記録<br />同じ得点は同じ順位。名前と記録は公開されます。</p>
+        <div class="ranking-tabs" role="tablist" aria-label="ランキングの種類"><button id="ranking-tab-all" type="button" role="tab" aria-selected="true" aria-controls="ranking-panel" data-category="all">全体</button><button id="ranking-tab-mobile" type="button" role="tab" aria-selected="false" aria-controls="ranking-panel" tabindex="-1" data-category="mobile">スマホ</button><button id="ranking-tab-pc" type="button" role="tab" aria-selected="false" aria-controls="ranking-panel" tabindex="-1" data-category="pc">PC</button></div>
+        <p class="ranking-description">TOP 50 · 各ブラウザの最高記録<br />同点は同じ順位。名前と記録は公開されます。</p>
+        <div id="ranking-panel" role="tabpanel" aria-labelledby="ranking-tab-all">
         <div class="ranking-toolbar"><span id="ranking-load-status" role="status">読み込み中…</span><button id="refresh-ranking" type="button">更新</button></div>
-        <ol id="ranking-list" aria-label="全国の記録"></ol>
+        <ol id="ranking-list" aria-label="全体の記録"></ol>
+        </div>
         <form method="dialog"><button class="primary-button">とじる</button></form>
+      </dialog>
+      <dialog id="animals-dialog" aria-labelledby="animals-heading">
+        <form method="dialog"><div class="dialog-heading"><h2 id="animals-heading">動物を選ぶ</h2><button class="icon-button" aria-label="動物の選択を閉じる">×</button></div></form>
+        <label class="check-label"><input type="checkbox" id="random-animals" checked />毎回ランダムに選ぶ</label>
+        <p class="animal-picker-help">選ぶと同じ組み合わせでプレイします。</p>
+        <fieldset><legend>左の動物</legend><div id="animal-options-left" class="animal-options"></div></fieldset>
+        <fieldset><legend>右の動物</legend><div id="animal-options-right" class="animal-options"></div></fieldset>
+        <form method="dialog"><button class="primary-button">決定</button></form>
       </dialog>
       <div class="fatal-error" id="fatal-error" hidden role="alert">読み込みに失敗しました。<br /><button onclick="location.reload()">もう一度読み込む</button></div>
     </main>
-    <div class="desktop-caption" aria-hidden="true"><strong>JUST<br />ONE<br />MORE.</strong><span>左右キーでも遊べます</span></div>
     <noscript>このゲームはJavaScriptを有効にして遊んでください。</noscript>
     <script type="module" src="./src/main.ts"></script>
   </body>

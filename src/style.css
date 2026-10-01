@@ -34,6 +34,26 @@
 .ranking-place { font-weight: 900; color: #b28524; }
 .ranking-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ranking-score { font-weight: 900; }
+.ranking-tabs { display: flex; gap: 6px; margin-bottom: 13px; }
+.ranking-tabs button { flex: 1; padding: 11px 5px; border-radius: 10px; background: #e2e8cb; color: var(--ink); font-size: 13px; font-weight: 700; }
+.ranking-tabs button[aria-selected="true"] { background: #315c40; color: #fff8db; }
+.animal-picker-open { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 6px 12px; width: 100%; min-height: 42px; padding: 9px; margin: 0 0 16px; border: 1px solid #78995d; border-radius: 12px; background: #fff9df; color: var(--ink); font-size: 13px; font-weight: 700; }
+.animal-picker-open span { font-size: 11px; font-weight: 500; }
+#animals-dialog { max-height: 90dvh; overflow-y: auto; }
+#animals-dialog .dialog-heading { margin-bottom: 18px; }
+.animal-picker-help { font-size: 11px; margin: 10px 0 15px; }
+#animals-dialog fieldset { border: 0; padding: 0; margin: 0 0 18px; }
+#animals-dialog legend { font-size: 13px; font-weight: 700; margin-bottom: 7px; }
+.animal-options { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; }
+.animal-option { position: relative; cursor: pointer; }
+.animal-option input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.animal-option > span { display: flex; flex-direction: column; align-items: center; padding: 4px; background: var(--animal-light); border: 2px solid transparent; border-radius: 10px; font-size: 11px; }
+.animal-option img { height: 40px; width: 64px; max-width: 100%; object-fit: contain; }
+.animal-option input:checked + span { border-color: var(--animal-color); box-shadow: inset 0 0 0 1px var(--animal-color); font-weight: 800; }
+.animal-option input:focus-visible + span { outline: 3px solid #1d6753; outline-offset: 1px; }
+.animal-option input:disabled + span { opacity: .3; cursor: default; }
+.title-content { max-height: 100%; overflow-y: auto; }
+.game-shell:is([data-screen="ready"],[data-screen="loading"]) :is(.hud,.timer-track,.controls-area,#game-canvas) { visibility: hidden; }
 .result-content { max-height: 100%; overflow-y: auto; }
 @media (max-height: 740px) {
   .result-content h2 { font-size: 25px; }

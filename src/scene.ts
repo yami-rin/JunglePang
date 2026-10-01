@@ -1,6 +1,6 @@
 import type { Animal } from './engine';
 import { DEFAULT_RULES } from './engine';
-import { ANIMALS, artURL, roundAnimals } from './animals';
+import { ANIMALS, artURL, roundAnimals, type AnimalArt } from './animals';
 
 /** Six SVG images; compositor animations run only when something changes. */
 export class JungleScene {
@@ -54,8 +54,8 @@ export class JungleScene {
       this.onReady?.();
     } catch { this.onFailure?.(); }
   }
-  setAnimals(seed: number): void {
-    this.art = roundAnimals(seed);
+  setAnimals(animals: Record<Animal, AnimalArt>): void {
+    this.art = animals;
     this.artSources = { monkey: artURL(this.art.monkey), tiger: artURL(this.art.tiger) };
     if (this.current.length) this.sync(this.current);
   }

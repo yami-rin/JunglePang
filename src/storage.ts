@@ -1,9 +1,12 @@
+import { validSelection, type AnimalSelection } from './animals';
 export const STORAGE_KEY = "jungle-pang:v1";
 export interface Preferences {
   best: number;
   volume: number;
   muted: boolean;
   music: boolean;
+  randomAnimals: boolean;
+  animals: AnimalSelection;
 }
 export interface StorageLike {
   getItem(key: string): string | null;
@@ -14,6 +17,8 @@ const defaults: Preferences = {
   volume: 0.45,
   muted: false,
   music: true,
+  randomAnimals: true,
+  animals: { left: 'monkey', right: 'elephant' },
 };
 
 export class PangStorage {
@@ -37,6 +42,8 @@ export class PangStorage {
         this.value.volume = Math.min(1, Math.max(0, v.volume));
       if (typeof v.muted === "boolean") this.value.muted = v.muted;
       if (typeof v.music === "boolean") this.value.music = v.music;
+      if (typeof v.randomAnimals === 'boolean') this.value.randomAnimals = v.randomAnimals;
+      if (validSelection(v.animals)) this.value.animals = { ...v.animals };
     } catch {
       this.available = false;
     }

@@ -1,5 +1,6 @@
 import type { Animal } from './engine';
 export interface AnimalArt { id: string; name: string; color: string; light: string; }
+export interface AnimalSelection { left: string; right: string; }
 export const ANIMALS: readonly AnimalArt[] = [
   { id: 'monkey', name: 'サル', color: '#ad6b45', light: '#f5d7b5' },
   { id: 'tiger', name: 'トラ', color: '#e89226', light: '#ffe2a0' },
@@ -10,7 +11,13 @@ export const ANIMALS: readonly AnimalArt[] = [
 ];
 // Separate hues AND silhouettes. Avoid brown/orange and orange/yellow pairings.
 const PAIRS = [[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,4],[2,5],[3,4],[4,5]] as const;
-export function roundAnimals(seed: number): Record<Animal, AnimalArt> {
+export function validSelection(value: unknown): value is AnimalSelection {
+  if (!value || typeof value !== 'object') return false;
+  const pair = value as AnimalSelection;
+  return pair.left !== pair.right && ANIMALS.some(art => art.id === pair.left) && ANIMALS.some(art => art.id === pair.right);
+}
+export function roundAnimals(seed: number, selection?: AnimalSelection | null): Record<Animal, AnimalArt> {
+  if (validSelection(selection)) return { monkey: ANIMALS.find(art => art.id === selection.left)!, tiger: ANIMALS.find(art => art.id === selection.right)! };
   let x = seed >>> 0;
   x = Math.imul(x ^ x >>> 16, 0x7feb352d);
   x = Math.imul(x ^ x >>> 15, 0x846ca68b);

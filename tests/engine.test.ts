@@ -176,7 +176,7 @@ describe("device-local persistence", () => {
     expect(
       first.update({ best: 1900, volume: 0.7, muted: true, music: false }),
     ).toBe(true);
-    expect(new PangStorage(backend).value).toEqual({
+    expect(new PangStorage(backend).value).toMatchObject({
       best: 1900,
       volume: 0.7,
       muted: true,
@@ -189,7 +189,7 @@ describe("device-local persistence", () => {
     const invalid = new PangStorage(
       fake('{"best":-10,"volume":12,"muted":"false","music":null}'),
     );
-    expect(invalid.value).toEqual({
+    expect(invalid.value).toMatchObject({
       best: 0,
       volume: 1,
       muted: false,
@@ -210,5 +210,15 @@ describe("device-local persistence", () => {
     expect(store.update({ best: 120 })).toBe(false);
     expect(store.value.best).toBe(120);
     expect(new PangStorage(null).update({ muted: true })).toBe(false);
+  });
+  it('persists animal choices and rejects corrupt or duplicate selections',()=>{
+    const backend=fake(null);
+    const store=new PangStorage(backend);
+    store.update({randomAnimals:false,animals:{left:'frog',right:'chick'}});
+    expect(new PangStorage(backend).value).toMatchObject({randomAnimals:false,animals:{left:'frog',right:'chick'}});
+    for(const animals of [{left:'frog',right:'frog'},{left:'broken',right:'tiger'}]) {
+      const recovered=new PangStorage(fake(JSON.stringify({animals})));
+      expect(recovered.value.animals).toEqual({left:'monkey',right:'elephant'});
+    }
   });
 });

@@ -1,8 +1,10 @@
 import config from './ranking-config.json';
 import type { InputRecord } from './engine';
+import { deviceType, type Device, type RankingCategory } from './platform';
 
 interface Identity { id: string; token: string; }
-export interface RankedRound { id: string; seed: number; rulesVersion: string; }
+export interface RankedRound { id: string; seed: number; rulesVersion: string; device?: Device; }
+export interface SubmittedScore { score: number; rank: number; device?: Device; deviceScore?: number; deviceRank?: number | null; }
 export interface Entry { id: string; nickname: string; score: number; hits: number; max_combo: number; rank: number; }
 const KEY = 'jungle-pang:ranking-v2';
 export class RankingClient {
@@ -46,12 +48,12 @@ export class RankingClient {
   }
   async start(): Promise<RankedRound> {
     await this.identify();
-    return this.api<RankedRound>('/api/rounds',{},true);
+    return this.api<RankedRound>('/api/rounds',{ device: deviceType(navigator.userAgent, navigator.maxTouchPoints, (navigator as Navigator & {userAgentData?: {mobile:boolean}}).userAgentData?.mobile) },true);
   }
-  async list(): Promise<Entry[]> { return (await this.api<{entries:Entry[]}>('/api/ranking')).entries; }
-  async submit(round: RankedRound, name: string, log: InputRecord[]): Promise<{score:number;rank:number}> {
+  async list(category: RankingCategory = 'all'): Promise<Entry[]> { return (await this.api<{entries:Entry[]}>(`/api/ranking?category=${category}`)).entries; }
+  async submit(round: RankedRound, name: string, log: InputRecord[]): Promise<SubmittedScore> {
     const inputs = log.filter(record=>record.outcome === 'correct' || record.outcome === 'wrong').map(({at,input})=>({at,input}));
-    const result = await this.api<{score:number;rank:number}>('/api/scores',{roundId:round.id,nickname:name,inputs},true);
+    const result = await this.api<SubmittedScore>('/api/scores',{roundId:round.id,nickname:name,inputs},true);
     this.name=name; this.persist(); return result;
   }
 }

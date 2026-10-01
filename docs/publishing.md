@@ -17,8 +17,9 @@
 - API反映: 認証済みの環境で `npm run deploy:api`。未適用migrationを実行してからWorkerを配信
 - ゲームURLは維持する。公開APIの設定は `src/ranking-config.json`
 - API反映後に `/api/health`、`/api/ranking` と、通常の40秒ラウンドからの登録を確認する
+- 0.3.0のmigrationは既存の得点を残したまま端末別の表を追加する。APIを先に更新し、`/api/ranking?category=all|mobile|pc` の取得を確認してからゲームを公開する
 - `tests/ranking.test.ts` は実際のSQLをインメモリSQLiteへ実行して保存・並び順・改ざん・再送・期限・制限を検証する
-- 通常の自動試験は公開得点を作らない。実配信への書込試験を明示有効化した際は、検証用IDだけの行を確認・削除する
+- 通常の自動試験は公開得点を作らない。実配信への書込試験を明示有効化した際は、検証用IDだけの `device_scores`、`rounds`、`players` を確認・削除する
 
 参加トークンを画面・ログ・Gitへ出さない。管理はCloudflareの既存認証から行い、アプリに管理APIや管理トークンは置かない。公開するデータと不正対策の限界は [仕様](specification.md) を参照。
 

@@ -4,8 +4,9 @@ import { bindInputs } from "./input";
 import { PangStorage } from "./storage";
 import { PangAudio } from "./audio";
 import { JungleScene } from "./scene";
-import { roundAnimals, artURL } from './animals';
+import { ANIMALS, roundAnimals, artURL } from './animals';
 import { RankingClient, type RankedRound } from './ranking';
+import { CATEGORY_LABELS, type RankingCategory } from './platform';
 
 const el = <T extends HTMLElement = HTMLElement>(id: string) => {
   const node = document.getElementById(id);
@@ -51,10 +52,12 @@ const debugMode = new URLSearchParams(location.search).get('debug') === '1';
 let rankedRound: RankedRound | null = null;
 let roundEpoch = 0;
 let rankingReason = '';
-let loadingRanking = false;
+let rankingCategory: RankingCategory = 'all';
+let rankingLoadEpoch = 0;
 el<HTMLInputElement>('nickname').value = ranking.name;
 let engine = new PangEngine(42);
 let roundSeed = 42;
+let currentAnimals = roundAnimals(42);
 let screen: "loading" | "ready" | "countdown" | "playing" | "finished" =
   "loading";
 let countdownStarted = 0;
@@ -72,8 +75,9 @@ const pressTimers: Partial<Record<Animal, ReturnType<typeof setTimeout>>> = {};
 const scene = new JungleScene(el('game-canvas'));
 
 function configureAnimals(seed: number): void {
-  const animals = roundAnimals(seed);
-  scene.setAnimals(seed);
+  const animals = roundAnimals(seed, storage.value.randomAnimals ? null : storage.value.animals);
+  currentAnimals = animals;
+  scene.setAnimals(animals);
   for (const slot of ['monkey','tiger'] as const) {
     const art = animals[slot];
     const button = ui[slot];
@@ -84,6 +88,12 @@ function configureAnimals(seed: number): void {
     button.style.borderColor = art.color;
     button.dataset.animal = art.id;
   }
+  for (const [side,slot] of [['left','monkey'],['right','tiger']] as const) {
+    const image = el<HTMLImageElement>(`hero-${side}`);
+    image.src = artURL(animals[slot]); image.alt = animals[slot].name;
+    image.parentElement!.style.background = animals[slot].light;
+  }
+  el('animal-selection-summary').textContent = storage.value.randomAnimals ? '毎回ランダム' : `${animals.monkey.name} / ${animals.tiger.name}`;
 }
 function scheduleFrame(): void {
   if (scheduledFrame) return;
@@ -125,6 +135,7 @@ function setScreen(value: typeof screen): void {
   ui.monkey.disabled = value !== "playing";
   ui.tiger.disabled = value !== "playing";
   ui.hint.hidden = value !== "playing";
+  el('quick-retry').hidden = value !== 'playing' && value !== 'countdown';
 }
 function updateHud(now: number): void {
   const remaining = engine.remaining(now);
@@ -220,7 +231,7 @@ function endRound(): void {
   setScreen("finished");
   ui.lock.hidden = true;
   ui.feedback.textContent =
-    engine.result.reason === "time" ? "TIME UP!" : "おつかれさま";
+    engine.result.reason === "time" ? "終了" : "中断";
   ui.feedback.classList.remove("show");
   void ui.feedback.offsetWidth;
   ui.feedback.classList.add("show");
@@ -237,19 +248,12 @@ function endRound(): void {
   el("result-accuracy").textContent = `${Math.round(result.accuracy * 100)}%`;
   el("new-best").hidden = !newBest;
   el("result-heading").textContent =
-    result.reason === "time" ? "おつかれさま！" : "プレイを中断しました";
-  el("result-message").textContent = !result.eligible
-    ? "中断した記録は自己ベストに保存されません"
-    : newBest
-      ? "自己ベスト更新！いいリズムでした。"
-      : result.hits === 0
-        ? "いちばん下の子と同じボタンを押してみよう"
-        : result.maxCombo >= 50
-          ? "すごい集中力。ジャングルの達人！"
-          : "もう一回、いけそう？";
+    result.reason === "time" ? "結果" : "プレイを中断しました";
+  el('result-message').hidden = result.eligible;
+  el('result-message').textContent = result.eligible ? '' : '中断した記録は自己ベストに保存されません';
   el('ranking-form').hidden = !result.eligible || !rankedRound || result.score === 0;
   el<HTMLButtonElement>('submit-score').disabled = false;
-  el('ranking-status').textContent = !result.eligible ? '中断した記録は全国に登録できません' : result.score === 0 ? '1回以上正解すると全国に登録できます' : rankingReason || '40秒完走！ニックネームで記録を登録できます';
+  el('ranking-status').textContent = !result.eligible ? '中断した記録はランキングに登録できません' : result.score === 0 ? '1回以上正解すると登録できます' : rankingReason || `全体・${CATEGORY_LABELS[rankedRound?.device ?? 'pc']}ランキングに登録できます`;
   updateBest();
 }
 function presentResult(): void {
@@ -303,12 +307,6 @@ function input(animal: Animal): void {
       () => button.classList.remove("pressed"),
       70,
     );
-    if (engine.combo % 10 === 0) {
-      ui.feedback.textContent = engine.combo >= 50 ? "WILD!" : "NICE!";
-      ui.feedback.classList.remove("show");
-      void ui.feedback.offsetWidth;
-      ui.feedback.classList.add("show");
-    }
   } else if (outcome === "wrong") {
     audio.wrong();
     scene.miss();
@@ -323,6 +321,7 @@ bindInputs(
   input,
 );
 ui.start.addEventListener("click", startRound);
+el('quick-retry').addEventListener('click', startRound);
 el("retry").addEventListener("click", startRound);
 el("back-to-title").addEventListener("click", showTitle);
 el("home").addEventListener("click", () => {
@@ -357,13 +356,16 @@ ui.music.addEventListener("change", () => {
 });
 
 async function loadRanking(): Promise<void> {
-  if (loadingRanking) return;
-  loadingRanking = true;
+  const epoch = ++rankingLoadEpoch;
+  const category = rankingCategory;
   const status = el('ranking-load-status');
   status.textContent = '読み込み中…';
+  el('ranking-list').replaceChildren();
+  el('ranking-panel').setAttribute('aria-busy','true');
   el<HTMLButtonElement>('refresh-ranking').disabled = true;
   try {
-    const entries = await ranking.list();
+    const entries = await ranking.list(category);
+    if (epoch !== rankingLoadEpoch) return;
     const rows = entries.map(entry => {
       const row = document.createElement('li');
       if (entry.id === ranking.playerId) row.className = 'my-record';
@@ -373,9 +375,28 @@ async function loadRanking(): Promise<void> {
       return row;
     });
     el('ranking-list').replaceChildren(...rows);
-    status.textContent = entries.length ? '全国の最新記録' : 'まだ記録がありません。最初のチャレンジャーになろう！';
-  } catch { status.textContent = '通信できません。「更新」で再試行できます'; }
-  finally { loadingRanking = false; el<HTMLButtonElement>('refresh-ranking').disabled = false; }
+    status.textContent = entries.length ? `${CATEGORY_LABELS[category]}の記録` : '記録がありません';
+  } catch { if (epoch === rankingLoadEpoch) status.textContent = '通信できません。「更新」で再試行できます'; }
+  finally { if (epoch === rankingLoadEpoch) { el<HTMLButtonElement>('refresh-ranking').disabled = false; el('ranking-panel').setAttribute('aria-busy','false'); } }
+}
+const rankingTabs = [...document.querySelectorAll<HTMLButtonElement>('.ranking-tabs [role="tab"]')];
+for (const [index,tab] of rankingTabs.entries()) {
+  tab.addEventListener('click',()=>{
+    rankingCategory = tab.dataset.category as RankingCategory;
+    for (const button of rankingTabs) { button.setAttribute('aria-selected',String(button === tab)); button.tabIndex = button === tab ? 0 : -1; }
+    el('ranking-panel').setAttribute('aria-labelledby',tab.id);
+    el('ranking-list').setAttribute('aria-label',`${CATEGORY_LABELS[rankingCategory]}の記録`);
+    void loadRanking();
+  });
+  tab.addEventListener('keydown',event=>{
+    let target = index;
+    if (event.key === 'ArrowRight') target = (index+1)%rankingTabs.length;
+    else if (event.key === 'ArrowLeft') target = (index+rankingTabs.length-1)%rankingTabs.length;
+    else if (event.key === 'Home') target = 0;
+    else if (event.key === 'End') target = rankingTabs.length-1;
+    else return;
+    event.preventDefault(); rankingTabs[target].focus(); rankingTabs[target].click();
+  });
 }
 for (const button of document.querySelectorAll('.ranking-open')) button.addEventListener('click',()=>{
   if (screen === 'playing') { engine.finish('quit',performance.now()); endRound(); presentResult(); }
@@ -392,16 +413,54 @@ el('ranking-form').addEventListener('submit',event=>{
   if (button.disabled) return;
   button.disabled = true;
   el('ranking-status').textContent = '記録を登録しています…';
-  const name = el<HTMLInputElement>('nickname').value.trim() || '名無しのパング';
+  const name = el<HTMLInputElement>('nickname').value.trim() || '名無し';
   void ranking.submit(round,name,engine.log).then(result=>{
     if (currentEngine !== engine) return;
     el('ranking-form').hidden = true;
-    el('ranking-status').textContent = `全国 ${result.rank}位 · 最高記録 ${formatter.format(result.score)} pt を登録しました`;
+    const deviceRank = result.device && result.deviceRank ? ` · ${CATEGORY_LABELS[result.device]} ${result.deviceRank}位` : '';
+    el('ranking-status').textContent = `全体 ${result.rank}位${deviceRank} · 記録を登録しました`;
   }).catch(error=>{
     if (currentEngine !== engine) return;
     el('ranking-status').textContent = error instanceof Error ? error.message : '通信できません。もう一度登録できます';
     button.disabled = false;
   });
+});
+function updateAnimalPicker(): void {
+  el<HTMLInputElement>('random-animals').checked = storage.value.randomAnimals;
+  for (const side of ['left','right'] as const) {
+    const other = side === 'left' ? 'right' : 'left';
+    for (const radio of el(`animal-options-${side}`).querySelectorAll<HTMLInputElement>('input')) {
+      radio.checked = radio.value === storage.value.animals[side];
+      radio.disabled = radio.value === storage.value.animals[other];
+    }
+  }
+  configureAnimals(roundSeed);
+  showStorageStatus();
+}
+for (const side of ['left','right'] as const) {
+  const choices = ANIMALS.map(art=>{
+    const label = document.createElement('label'); label.className = 'animal-option';
+    label.style.setProperty('--animal-color',art.color); label.style.setProperty('--animal-light',art.light);
+    const radio = document.createElement('input'); radio.type = 'radio'; radio.name = `animal-${side}`; radio.value = art.id;
+    radio.setAttribute('aria-label',art.name);
+    const card = document.createElement('span');
+    const image = document.createElement('img'); image.src = artURL(art); image.alt = ''; image.draggable = false;
+    const name = document.createElement('span'); name.textContent = art.name; card.append(image,name);
+    label.append(radio,card);
+    const choose = () => {
+      if (!storage.value.randomAnimals && storage.value.animals[side] === art.id) return;
+      storage.update({randomAnimals:false,animals:{...storage.value.animals,[side]:art.id}});
+      updateAnimalPicker();
+    };
+    radio.addEventListener('change',choose);
+    radio.addEventListener('click',choose);
+    return label;
+  });
+  el(`animal-options-${side}`).replaceChildren(...choices);
+}
+el('choose-animals').addEventListener('click',()=>{ updateAnimalPicker(); el<HTMLDialogElement>('animals-dialog').showModal(); });
+el('random-animals').addEventListener('change',()=>{
+  storage.update({randomAnimals:el<HTMLInputElement>('random-animals').checked}); updateAnimalPicker();
 });
 function interrupt(): void {
   audio.stopAll();
@@ -424,7 +483,7 @@ window.addEventListener("blur", () => {
 scene.onReady = () => {
   scene.sync(engine.queue);
   ui.start.disabled = false;
-  ui.start.querySelector("span")!.textContent = "あそぶ";
+  ui.start.querySelector("span")!.textContent = "スタート";
   setScreen("ready");
   updateHud(performance.now());
 };
@@ -457,7 +516,7 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
         remaining: engine.remaining(performance.now()),
         log: [...engine.log],
         gameObjects: scene.objectCount(),
-        animals: roundAnimals(roundSeed),
+        animals: currentAnimals,
         renderTarget: scene.target(),
         tower: scene.tower(),
       }),

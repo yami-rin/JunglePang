@@ -1,13 +1,14 @@
 import { describe, it, expect } from 'vitest';
 import { DatabaseSync } from 'node:sqlite';
-import { readFileSync } from 'node:fs';
+import { readFileSync, readdirSync } from 'node:fs';
 import { handle, replay, nickname, type Database } from '../api/worker';
 import { PangEngine } from '../src/engine';
 import { roundAnimals } from '../src/animals';
+import { deviceType } from '../src/platform';
 
 function database(): Database {
   const sqlite = new DatabaseSync(':memory:');
-  sqlite.exec(readFileSync('api/migrations/0001_ranking.sql','utf8'));
+  for (const migration of readdirSync('api/migrations').filter(name=>name.endsWith('.sql')).sort()) sqlite.exec(readFileSync(`api/migrations/${migration}`,'utf8'));
   const db: Database = {
     prepare(sql) {
       let values: any[] = [];
@@ -103,5 +104,69 @@ describe('distinct random animals',()=>{
       pairs.add(pair.monkey.id+':'+pair.tiger.id); animals.add(pair.monkey.id); animals.add(pair.tiger.id);
     }
     expect(animals.size).toBe(6); expect(pairs.size).toBeGreaterThan(10);
+  });
+  it('uses the chosen pair independently of the random seed and falls back for invalid pairs',()=>{
+    for (const seed of [1,42,98765]) expect(roundAnimals(seed,{left:'frog',right:'hippo'})).toMatchObject({monkey:{id:'frog'},tiger:{id:'hippo'}});
+    expect(roundAnimals(42,{left:'frog',right:'frog'})).toEqual(roundAnimals(42));
+    expect(roundAnimals(42,{left:'unknown',right:'hippo'})).toEqual(roundAnimals(42));
+  });
+});
+
+describe('device rankings',()=>{
+  it('classifies phones and iPadOS without treating touchscreen PCs as phones',()=>{
+    expect(deviceType('Mozilla Android')).toBe('mobile');
+    expect(deviceType('Mozilla iPhone')).toBe('mobile');
+    expect(deviceType('Mozilla Macintosh',5)).toBe('mobile');
+    expect(deviceType('Mozilla Windows NT 10.0',10)).toBe('pc');
+    expect(deviceType('Mozilla Macintosh')).toBe('pc');
+    expect(deviceType('Unknown',0,true)).toBe('mobile');
+  });
+  it('preserves legacy scores without inventing a device category',()=>{
+    const sqlite=new DatabaseSync(':memory:');
+    sqlite.exec(readFileSync('api/migrations/0001_ranking.sql','utf8'));
+    sqlite.exec("INSERT INTO players(id,token_hash,nickname,score) VALUES('old','hash','既存',123); INSERT INTO rounds(id,player_id,seed,created_at) VALUES('old-round','old',42,0)");
+    sqlite.exec(readFileSync('api/migrations/0002_device_rankings.sql','utf8'));
+    expect(sqlite.prepare('SELECT score FROM players').get()).toMatchObject({score:123});
+    expect(sqlite.prepare('SELECT device FROM rounds').get()).toMatchObject({device:'unknown'});
+    expect(sqlite.prepare('SELECT COUNT(*) AS count FROM device_scores').get()).toMatchObject({count:0});
+    sqlite.close();
+  });
+  it('stores a best per device, combines only the overall best, and keeps retries in the original category',async()=>{
+    const env={DB:database()}; const time=100000;
+    const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
+    const submit=async(device:string,hits:number,offset:number)=>{
+      const round=await (await handle(request('/api/rounds',{device},player.token),env,time+offset)).json() as any;
+      expect(round.device).toBe(device);
+      const payload={roundId:round.id,nickname:device==='mobile'?'スマホ記録':'PC記録',inputs:trace(round.seed,hits),device:device==='mobile'?'pc':'mobile'};
+      const response=await handle(request('/api/scores',payload,player.token),env,time+offset+41000);
+      expect(response.status).toBe(200);
+      return {result:await response.json() as any,round,payload};
+    };
+    expect((await submit('pc',12,0)).result).toMatchObject({score:135,device:'pc',deviceScore:135,deviceRank:1});
+    const mobile=await submit('mobile',3,50000);
+    expect(mobile.result).toMatchObject({score:135,device:'mobile',deviceScore:30,deviceRank:1});
+    expect((await submit('mobile',1,100000)).result.deviceScore).toBe(30);
+    const duplicate=await handle(request('/api/scores',{...mobile.payload,inputs:trace(mobile.round.seed,100)},player.token),env,time+160000);
+    expect(await duplicate.json()).toMatchObject({score:135,device:'mobile',deviceScore:30});
+    for(const [category,score,nickname] of [['all',135,'PC記録'],['pc',135,'PC記録'],['mobile',30,'スマホ記録']] as const) {
+      const board=await handle(request(`/api/ranking?category=${category}`),env,time);
+      const value=await board.json() as any;
+      expect(value.category).toBe(category);
+      expect(value.entries).toHaveLength(1);
+      expect(value.entries[0]).toMatchObject({id:player.id,score,nickname,rank:1});
+    }
+    expect((await handle(request('/api/ranking?category=bad'),env,time)).status).toBe(400);
+    expect((await handle(request('/api/rounds',{device:'all'},player.token),env,time)).status).toBe(400);
+  });
+  it('sorts each category independently, supports ties, and excludes records from other devices',async()=>{
+    const env={DB:database()};
+    for(const [id,device,score] of [['a','mobile',30],['b','mobile',30],['c','mobile',10],['d','pc',60]] as const) {
+      await env.DB.prepare('INSERT INTO players(id,token_hash,nickname,score) VALUES(?,?,?,?)').bind(id,'hash-'+id,id,score).run();
+      await env.DB.prepare('INSERT INTO device_scores(player_id,device,nickname,score,hits,max_combo,achieved_at) VALUES(?,?,?,?,1,1,0)').bind(id,device,id,score).run();
+    }
+    const mobile=await (await handle(request('/api/ranking?category=mobile'),env)).json() as any;
+    expect(mobile.entries.map((entry:any)=>[entry.id,entry.rank])).toEqual([['a',1],['b',1],['c',3]]);
+    const pc=await (await handle(request('/api/ranking?category=pc'),env)).json() as any;
+    expect(pc.entries.map((entry:any)=>[entry.id,entry.rank])).toEqual([['d',1]]);
   });
 });
