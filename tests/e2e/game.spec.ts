@@ -14,6 +14,7 @@ interface Snapshot {
   result: { score: number; eligible: boolean; reason: string } | null;
   log: unknown[];
   renderTarget: string;
+  tower: { animal: string; y: number; restY: number }[];
 }
 declare global {
   interface Window {
@@ -160,6 +161,55 @@ test("native mouse or touchscreen input advances exactly once and matches the vi
     expect(after.misses).toBe(0);
     expect(after.renderTarget).toBe(after.queue[0]);
   }
+});
+
+test("bottom row falls with the tower while accepting the next tap", async ({ page }, testInfo) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.reload();
+  await expect(page.locator("#start")).toBeEnabled();
+  const motion = await page.evaluate(async () => {
+    window.__pang.reset(42);
+    const press = () => {
+      const animal = window.__pang.snapshot().queue[0];
+      const button = document.getElementById(animal)!;
+      button.dispatchEvent(new PointerEvent("pointerdown", { bubbles: true, pointerId: 8, pointerType: "touch", button: 0 }));
+      button.dispatchEvent(new PointerEvent("pointerup", { bubbles: true, pointerId: 8, pointerType: "touch", button: 0 }));
+      return window.__pang.snapshot();
+    };
+    const before = window.__pang.snapshot();
+    const first = press();
+    // A second tap in the same JS turn arrives before any animation frame.
+    const second = press();
+    const samples = [{ elapsed: 0, y: second.tower[0].y }];
+    const begin = performance.now();
+    while (performance.now() - begin < 180) {
+      await new Promise(requestAnimationFrame);
+      samples.push({ elapsed: performance.now() - begin, y: window.__pang.snapshot().tower[0].y });
+    }
+    return { before, first, second, samples, settled: window.__pang.snapshot() };
+  });
+  expect(motion.first.tower[0].y).toBeLessThan(motion.first.tower[0].restY - 1);
+  expect(motion.first.tower.every(piece => piece.y < piece.restY - 1)).toBe(true);
+  expect(motion.first.tower[0].animal).toBe(motion.first.queue[0]);
+  expect(motion.second.hits).toBe(2);
+  expect(motion.second.misses).toBe(0);
+  expect(motion.second.renderTarget).toBe(motion.second.queue[0]);
+  expect(motion.samples.some(sample => sample.y > motion.samples[0].y + 1)).toBe(true);
+  expect(motion.settled.tower[0].y).toBeCloseTo(motion.settled.tower[0].restY, 2);
+  await mkdir("artifacts", { recursive: true });
+  await writeFile(`artifacts/fall-${testInfo.project.name}.json`, JSON.stringify(motion, null, 2));
+});
+
+test("bottom row respects reduced motion without delaying scoring", async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await page.reload();
+  await expect(page.locator("#start")).toBeEnabled();
+  await page.evaluate(() => window.__pang.reset(42));
+  await correctTap(page);
+  const state = await snap(page);
+  expect(state.hits).toBe(1);
+  expect(state.tower.every(piece => piece.y === piece.restY)).toBe(true);
+  expect(state.renderTarget).toBe(state.queue[0]);
 });
 
 test("15 inputs per second do not double-count or lose taps", async ({

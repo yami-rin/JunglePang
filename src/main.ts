@@ -376,6 +376,7 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
             0,
           ),
         renderTarget: scene.target(),
+        tower: scene.tower(),
       }),
       reset: (seed = 1) => {
         audio.stopAll();

@@ -1,0 +1,359 @@
+{
+  "before": {
+    "phase": "running",
+    "screen": "playing",
+    "queue": [
+      "monkey",
+      "monkey",
+      "tiger",
+      "monkey",
+      "monkey",
+      "monkey"
+    ],
+    "score": 0,
+    "combo": 0,
+    "hits": 0,
+    "misses": 0,
+    "result": null,
+    "remaining": 39999.799999952316,
+    "log": [],
+    "gameObjects": 27,
+    "renderTarget": "monkey",
+    "tower": [
+      {
+        "animal": "monkey",
+        "y": 436.16625,
+        "restY": 436.16625
+      },
+      {
+        "animal": "monkey",
+        "y": 361.9995833333333,
+        "restY": 361.9995833333333
+      },
+      {
+        "animal": "tiger",
+        "y": 287.8329166666666,
+        "restY": 287.8329166666666
+      },
+      {
+        "animal": "monkey",
+        "y": 213.66625,
+        "restY": 213.66625
+      },
+      {
+        "animal": "monkey",
+        "y": 139.4995833333333,
+        "restY": 139.4995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 65.33291666666662,
+        "restY": 65.33291666666662
+      }
+    ]
+  },
+  "first": {
+    "phase": "running",
+    "screen": "playing",
+    "queue": [
+      "monkey",
+      "tiger",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey"
+    ],
+    "score": 10,
+    "combo": 1,
+    "hits": 1,
+    "misses": 0,
+    "result": null,
+    "remaining": 39984.39999997616,
+    "log": [
+      {
+        "at": 12.600000023841858,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 10,
+        "combo": 1
+      }
+    ],
+    "gameObjects": 27,
+    "renderTarget": "monkey",
+    "tower": [
+      {
+        "animal": "monkey",
+        "y": 400.56624999999997,
+        "restY": 436.16625
+      },
+      {
+        "animal": "tiger",
+        "y": 326.3995833333333,
+        "restY": 361.9995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 252.23291666666663,
+        "restY": 287.8329166666666
+      },
+      {
+        "animal": "monkey",
+        "y": 178.06625,
+        "restY": 213.66625
+      },
+      {
+        "animal": "monkey",
+        "y": 103.89958333333331,
+        "restY": 139.4995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 29.73291666666662,
+        "restY": 65.33291666666662
+      }
+    ]
+  },
+  "second": {
+    "phase": "running",
+    "screen": "playing",
+    "queue": [
+      "tiger",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey"
+    ],
+    "score": 20,
+    "combo": 2,
+    "hits": 2,
+    "misses": 0,
+    "result": null,
+    "remaining": 39983.699999928474,
+    "log": [
+      {
+        "at": 12.600000023841858,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 10,
+        "combo": 1
+      },
+      {
+        "at": 15.800000071525574,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 20,
+        "combo": 2
+      }
+    ],
+    "gameObjects": 27,
+    "renderTarget": "tiger",
+    "tower": [
+      {
+        "animal": "tiger",
+        "y": 400.56624999999997,
+        "restY": 436.16625
+      },
+      {
+        "animal": "monkey",
+        "y": 326.3995833333333,
+        "restY": 361.9995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 252.23291666666663,
+        "restY": 287.8329166666666
+      },
+      {
+        "animal": "monkey",
+        "y": 178.06625,
+        "restY": 213.66625
+      },
+      {
+        "animal": "monkey",
+        "y": 103.89958333333331,
+        "restY": 139.4995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 29.73291666666662,
+        "restY": 65.33291666666662
+      }
+    ]
+  },
+  "samples": [
+    {
+      "elapsed": 0,
+      "y": 400.56624999999997
+    },
+    {
+      "elapsed": 1.7999999523162842,
+      "y": 400.56624999999997
+    },
+    {
+      "elapsed": 5.299999952316284,
+      "y": 400.56624999999997
+    },
+    {
+      "elapsed": 7.399999976158142,
+      "y": 407.5854425096682
+    },
+    {
+      "elapsed": 15.299999952316284,
+      "y": 415.4186308670873
+    },
+    {
+      "elapsed": 24.799999952316284,
+      "y": 422.350696488907
+    },
+    {
+      "elapsed": 32.199999928474426,
+      "y": 427.0382737736617
+    },
+    {
+      "elapsed": 40.799999952316284,
+      "y": 430.52381303684103
+    },
+    {
+      "elapsed": 48.89999997615814,
+      "y": 433.2299637390596
+    },
+    {
+      "elapsed": 57.10000002384186,
+      "y": 434.7524524832078
+    },
+    {
+      "elapsed": 65.39999997615814,
+      "y": 435.62940228984326
+    },
+    {
+      "elapsed": 73.60000002384186,
+      "y": 436.0660801648687
+    },
+    {
+      "elapsed": 83,
+      "y": 436.16254000610627
+    },
+    {
+      "elapsed": 90.69999992847443,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 99,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 107.19999992847443,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 115.69999992847443,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 124.10000002384186,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 132.5,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 140.29999995231628,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 148.69999992847443,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 157.5,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 165.60000002384186,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 174.19999992847443,
+      "y": 436.16625
+    },
+    {
+      "elapsed": 182.19999992847443,
+      "y": 436.16625
+    }
+  ],
+  "settled": {
+    "phase": "running",
+    "screen": "playing",
+    "queue": [
+      "tiger",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey",
+      "monkey"
+    ],
+    "score": 20,
+    "combo": 2,
+    "hits": 2,
+    "misses": 0,
+    "result": null,
+    "remaining": 39801.5,
+    "log": [
+      {
+        "at": 12.600000023841858,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 10,
+        "combo": 1
+      },
+      {
+        "at": 15.800000071525574,
+        "input": "monkey",
+        "target": "monkey",
+        "outcome": "correct",
+        "score": 20,
+        "combo": 2
+      }
+    ],
+    "gameObjects": 27,
+    "renderTarget": "tiger",
+    "tower": [
+      {
+        "animal": "tiger",
+        "y": 436.16625,
+        "restY": 436.16625
+      },
+      {
+        "animal": "monkey",
+        "y": 361.9995833333333,
+        "restY": 361.9995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 287.8329166666666,
+        "restY": 287.8329166666666
+      },
+      {
+        "animal": "monkey",
+        "y": 213.66625,
+        "restY": 213.66625
+      },
+      {
+        "animal": "monkey",
+        "y": 139.4995833333333,
+        "restY": 139.4995833333333
+      },
+      {
+        "animal": "monkey",
+        "y": 65.33291666666662,
+        "restY": 65.33291666666662
+      }
+    ]
+  }
+}

@@ -124,8 +124,9 @@ export class JungleScene extends Phaser.Scene {
       piece
         .setPosition(this.worldWidth / 2, targetY)
         .setDisplaySize(this.tileWidth, this.tileWidth * 0.66);
-      // The judgeable bottom row always snaps immediately; only look-ahead rows move.
-      if (animate && i > 0 && !this.reducedMotion) {
+      // Update the target identity immediately, then drop every row together.
+      // Input remains available while the tower settles, including the bottom row.
+      if (animate && !this.reducedMotion) {
         piece.y = targetY - this.pitch * 0.48;
         this.tweens.add({
           targets: piece,
@@ -178,5 +179,12 @@ export class JungleScene extends Phaser.Scene {
   }
   target(): Animal | undefined {
     return this.pieces[0]?.texture.key as Animal | undefined;
+  }
+  tower(): { animal: Animal; y: number; restY: number }[] {
+    return this.pieces.map((piece, i) => ({
+      animal: piece.texture.key as Animal,
+      y: piece.y,
+      restY: this.bottomY - i * this.pitch,
+    }));
   }
 }
