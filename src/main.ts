@@ -1,6 +1,7 @@
 import "./style.css";
 import { PangEngine, DEFAULT_RULES, RULES_VERSION, type Animal } from "./engine";
 import { bindInputs } from "./input";
+import { AUTO_RESET_VERSION, nextAttempt } from './attempt';
 import { bindViewport } from './viewport';
 import { PangStorage } from "./storage";
 import { PangAudio } from "./audio";
@@ -60,6 +61,9 @@ let rankingLoadEpoch = 0;
 el<HTMLInputElement>('nickname').value = ranking.name;
 let engine = new PangEngine(42);
 let roundSeed = 42;
+let attemptBaseSeed = 42;
+let attemptIndex = 0;
+let initialQueue = [...engine.queue];
 let currentAnimals = roundAnimals(42);
 let screen: "loading" | "ready" | "countdown" | "playing" | "finished" =
   "loading";
@@ -179,10 +183,11 @@ function updateHud(now: number): void {
     audio.warning();
   }
 }
-function resetRound(seed: number): void {
+function resetRound(seed: number, animalSeed = seed): void {
   roundSeed = seed;
   engine = new PangEngine(seed);
-  configureAnimals(seed);
+  initialQueue = [...engine.queue];
+  configureAnimals(animalSeed);
   scene.resetEffects();
   scene.sync(engine.queue);
   resultShown = false;
@@ -200,8 +205,10 @@ async function startRound(): Promise<void> {
   audio.stopAll();
   const epoch = ++roundEpoch;
   rankedRound = null;
+  attemptIndex = 0;
   rankingReason = debugMode ? '検証モードの記録は全国に登録できません' : '接続が間に合わなかったため、今回は端末の記録のみです';
-  resetRound(crypto.getRandomValues(new Uint32Array(1))[0]);
+  attemptBaseSeed = crypto.getRandomValues(new Uint32Array(1))[0];
+  resetRound(attemptBaseSeed);
   ui.app.dataset.preparing = 'true';
   ui.countdown.textContent = '準備中…';
   ui.countdown.classList.remove("go");
@@ -220,6 +227,7 @@ async function startRound(): Promise<void> {
       if (epoch !== roundEpoch) return;
       if (round?.rulesVersion === RULES_VERSION) {
         rankedRound = round;
+        attemptBaseSeed = round.seed;
         resetRound(round.seed);
         rankingReason = '';
       } else if (round) rankingReason = 'ページを再読み込みしてからもう一度プレイしてください';
@@ -237,8 +245,14 @@ async function startRound(): Promise<void> {
 function autoResetRound(now: number): void {
   roundEpoch++;
   audio.stopAll();
-  // Reuse the unsubmitted challenge and original seed; rapid misses need no API calls.
-  resetRound(roundSeed);
+  const next = nextAttempt(attemptBaseSeed, attemptIndex, initialQueue, engine.queue);
+  attemptIndex = next.index;
+  if (rankedRound?.autoResetVersion === AUTO_RESET_VERSION) rankedRound = {...rankedRound, attempt: attemptIndex};
+  else if (rankedRound) {
+    rankedRound = null;
+    rankingReason = 'ランキングの更新が必要です。ページを再読み込みしてからもう一度プレイしてください';
+  }
+  resetRound(next.seed, attemptBaseSeed);
   engine.start(now);
   setScreen('playing');
   audio.wrong();
@@ -253,6 +267,9 @@ function showTitle(): void {
   resultShown = false;
   engine = new PangEngine(42);
   roundSeed = 42;
+  attemptBaseSeed = 42;
+  attemptIndex = 0;
+  initialQueue = [...engine.queue];
   configureAnimals(42);
   scene.resetEffects();
   scene.sync(engine.queue);
@@ -573,6 +590,9 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
         audio.stopAll();
         engine = new PangEngine(seed);
         roundSeed = seed;
+        attemptBaseSeed = seed;
+        attemptIndex = 0;
+        initialQueue = [...engine.queue];
         configureAnimals(seed);
         resultShown = false;
         savedResult = false;

@@ -4,7 +4,7 @@ import { deviceType, type Device, type RankingCategory } from './platform';
 import { isNgNickname, displayNickname, NG_NAME_MESSAGE, NAME_POLICY_VERSION } from './name-policy';
 
 interface Identity { id: string; token: string; }
-export interface RankedRound { id: string; seed: number; rulesVersion: string; device?: Device; }
+export interface RankedRound { id: string; seed: number; rulesVersion: string; device?: Device; autoResetVersion?: number; attempt?: number; }
 export interface SubmittedScore { score: number; rank: number; device?: Device; deviceScore?: number; deviceRank?: number | null; }
 export interface Entry { id: string; nickname: string; score: number; hits: number; max_combo: number; rank: number; }
 const KEY = 'jungle-pang:ranking-v2';
@@ -62,7 +62,7 @@ export class RankingClient {
   async submit(round: RankedRound, name: string, log: InputRecord[]): Promise<SubmittedScore> {
     if (isNgNickname(name)) throw new Error(NG_NAME_MESSAGE);
     const inputs = log.filter(record=>record.outcome === 'correct' || record.outcome === 'wrong').map(({at,input})=>({at,input}));
-    const result = await this.api<SubmittedScore>('/api/scores',{roundId:round.id,nickname:name,inputs},true);
+    const result = await this.api<SubmittedScore>('/api/scores',{roundId:round.id,nickname:name,inputs,...(round.attempt === undefined ? {} : {attempt:round.attempt})},true);
     this.storedName=this.name=name; this.persist(); return result;
   }
 }

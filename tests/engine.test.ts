@@ -1,6 +1,36 @@
 import { describe, it, expect } from "vitest";
 import { PangEngine, type Animal } from "../src/engine";
 import { PangStorage, STORAGE_KEY, type StorageLike } from "../src/storage";
+import { attemptSeed, nextAttempt } from '../src/attempt';
+
+describe('fresh AutoReset attempts',()=>{
+  it('always replaces both the previous starting tower and the progressed tower, with capped reproducible refills',()=>{
+    for(let base=1;base<=64;base++) {
+      let index=0;
+      let engine=new PangEngine(base);
+      for(let retry=0;retry<100;retry++) {
+        const initial=[...engine.queue];
+        engine.start(0);
+        for(let hit=0;hit<retry%17;hit++) engine.input(engine.queue[0],hit);
+        const progressed=[...engine.queue];
+        const next=nextAttempt(base,index,initial,progressed);
+        expect(next.index).toBeGreaterThan(index);
+        expect(next.seed).toBe(attemptSeed(base,next.index));
+        index=next.index;
+        engine=new PangEngine(next.seed);
+        expect(engine.queue).not.toEqual(initial);
+        expect(engine.queue).not.toEqual(progressed);
+        expect(engine.queue.join(',')).not.toMatch(/(monkey,){4}monkey|(tiger,){4}tiger/);
+      }
+    }
+  });
+  it('preserves initial challenges and rejects invalid attempt indices',()=>{
+    expect(attemptSeed(42,0)).toBe(42);
+    expect(attemptSeed(42,1)).toBe(attemptSeed(42,1));
+    expect(attemptSeed(42,0xffffffff)).toBeGreaterThan(0);
+    for(const index of [-1,0.5,NaN,Infinity,0x100000000]) expect(()=>attemptSeed(42,index)).toThrow(RangeError);
+  });
+});
 
 describe("40-second rules", () => {
   it('caps consecutive animals at four across the initial tower and every refill',()=>{

@@ -3,6 +3,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
 import { handle, replay, nickname, type Database } from '../api/worker';
 import { PangEngine, RULES_VERSION } from '../src/engine';
+import { AUTO_RESET_VERSION, attemptSeed, nextAttempt } from '../src/attempt';
 import { roundAnimals } from '../src/animals';
 import { deviceType } from '../src/platform';
 import {NAME_POLICY_VERSION,NG_NAME_MESSAGE} from '../src/name-policy';
@@ -39,6 +40,34 @@ const trace = (seed: number, hits: number) => {
   return engine.log.map(({at,input})=>({at,input}));
 };
 describe('shared national ranking', () => {
+  it('registers the final fresh AutoReset attempt against its issued challenge without accepting client scores',async()=>{
+    const env={DB:database()};const time=100000;
+    const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
+    const round=await (await handle(request('/api/rounds',{device:'mobile'},player.token),env,time)).json() as any;
+    expect(round.autoResetVersion).toBe(AUTO_RESET_VERSION);
+    let attempt=0,seed=round.seed;
+    for(let i=0;i<25;i++) {
+      const next=nextAttempt(round.seed,attempt,new PangEngine(seed).queue);
+      attempt=next.index;seed=next.seed;
+    }
+    const response=await handle(request('/api/scores',{roundId:round.id,attempt,nickname:'リセット確認',inputs:trace(seed,12),score:9999999},player.token),env,time+45000);
+    expect(response.status).toBe(200);
+    expect(await response.json()).toMatchObject({score:135,device:'mobile',deviceScore:135});
+    expect(await env.DB.prepare('SELECT score FROM rounds WHERE id=?').bind(round.id).first()).toMatchObject({score:135});
+    expect(replay(attemptSeed(round.seed,attempt),trace(seed,12)).hits).toBe(12);
+  });
+  it('rejects malformed retry indices and retries on legacy challenges without consuming them',async()=>{
+    const env={DB:database()};const time=100000;
+    const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
+    const round=await (await handle(request('/api/rounds',{},player.token),env,time)).json() as any;
+    for(const attempt of [-1,0.5,'1',null,0x100000000]) {
+      const response=await handle(request('/api/scores',{roundId:round.id,attempt,nickname:'検証',inputs:trace(round.seed,1)},player.token),env,time+45000);
+      expect(response.status).toBe(400);
+    }
+    expect(await env.DB.prepare('SELECT consumed FROM rounds WHERE id=?').bind(round.id).first()).toMatchObject({consumed:null});
+    await env.DB.prepare('INSERT INTO rounds(id,player_id,seed,created_at) VALUES(?,?,?,?)').bind('old',player.id,42,time).run();
+    expect((await handle(request('/api/scores',{roundId:'old',attempt:1,nickname:'検証',inputs:trace(42,1)},player.token),env,time+45000)).status).toBe(400);
+  });
   it('replays new capped sequences and old uncapped challenges with their own rules',async()=>{
     const env={DB:database()}; const time=100000;
     const player=await (await handle(request('/api/players',{}),env,time)).json() as any;

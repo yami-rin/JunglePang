@@ -20,6 +20,7 @@
 - API反映後に `/api/health`、`/api/ranking` と、通常の40秒ラウンドからの登録を確認する
 - 0.3.0のmigrationは既存の得点を残したまま端末別の表を追加する。APIを先に更新し、`/api/ranking?category=all|mobile|pc` の取得を確認してからゲームを公開する
 - 0.3.4では `0003_round_rules.sql` でラウンドのルール版を追加する。既存ラウンドは版2のまま、更新後の発行は版3（最大4連続）になる。最高記録の書換・削除は行わない。APIの `/api/health` が版3になったことを確認してからフロントを配信する
+- 0.3.5はAPIを先に配信し、`/api/health` の `autoResetVersion: 1` を確認してからフロントを配信する。AutoResetの試行番号から並びを再生できることを単体・完走登録で確認する。DBのmigrationや既存記録の書換は不要
 - `tests/ranking.test.ts` は実際のSQLをインメモリSQLiteへ実行して保存・並び順・改ざん・再送・期限・制限を検証する
 - 通常の自動試験は公開得点を作らない。実配信への書込試験を明示有効化した際は、検証用IDだけの `device_scores`、`rounds`、`players` を確認・削除する
 
