@@ -214,3 +214,13 @@ WebKitを追加確認する場合は `PANG_WEBKIT=1` でPlaywrightを実行す�
 - PC・Pixel 7模擬の全ブラウザ試験 **58 PASS / 6 SKIP（3.7分）**。通常の実時間40秒→結果→再試行、入力・演出、15入力/秒、保存、ランキング3カテゴリ、NG名表示、画面固定とレスポンシブ表示も確認。SKIPは任意の本番登録2件とPCに不要なタッチ試験4件
 - iPhone 13模擬のWebKit 26.6 **10/10 PASS（41.9秒）**。新規6試験と通常ミス・ネイティブ入力・更新アイコン・通常起動を確認。物理スマホや実際のSafari UIは未検証
 - 6秒・90入力の同一負荷でPC/Pixel 7とも入力処理p95 **0.5ms**、フレーム間隔p95 **8.5ms**。測定値は `artifacts/performance-autoreset-034-*.json`。実機の性能保証ではない
+
+### 0.3.4の公開確認
+
+配信ソース: `71e6c27c41b8b95ed19417a5c67376b5c2c20aac`。[Actions run 37042947904](https://github.com/yami-rin/JunglePang/actions/runs/37042947904) は単体・ビルド・配信ともSUCCESS。Cloudflareへmigration `0003_round_rules.sql` とWorker版 `31043b3a-f46f-4cfd-8d17-472fdce6beb2` を先に配信し、ヘルスチェックのルール版3とランキング3カテゴリの取得を確認。
+
+公開URLでPC・Pixel 7・iPhone 13模擬 **21/21 PASS（1.2分）**。新規6試験と通常起動を各ブラウザで確認。実際の公開APIからのラウンド版3を取得し、Chromium/WebKit双方でネイティブ入力50点→ミス→0点/40秒、同じタワー、カウントダウンなし、設定の再読込を確認。公開JSの606段生成（600正解）で最大4連続、ミス0、描画17オブジェクトを確認。公開した全11ファイルがローカルのビルドとSHA-256一致。
+
+設定とプレイ画面を目視確認。証拠は `artifacts/public-autoreset-034.json`、`artifacts/autoreset-034-settings.png`、`artifacts/autoreset-034-chromium.png`・`artifacts/autoreset-034-webkit.png`。画面取得時はコンボ表示のフェード終了を待った。
+
+本番APIへの実時間40秒完走・登録の任意試験 **2/2 PASS（1.5分）**。PC・スマホ各135点/12正解/12コンボを全体と該当端末のランキングで確認。試験後、検証用ID2件だけの最高記録・ラウンド・参加者を削除し、D1で対象の残件数がすべて0であることを確認。参加トークンを含むtraceは保存せず、既存参加者の記録は変更していない。
