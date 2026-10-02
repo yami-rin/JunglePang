@@ -1,0 +1,195 @@
+{
+  "url": "https://yami-rin.github.io/JunglePang/",
+  "version": "0.3.2",
+  "checkedAt": "2026-10-02T07:41:12.465Z",
+  "sourceCommit": "747fcca966893cade2cce1594b6a6fb5e3728c76",
+  "workerVersion": "80561d87-5d6a-4cc1-a79a-e834facb30e2",
+  "actionsRun": "https://github.com/yami-rin/JunglePang/actions/runs/36979563077",
+  "dictionaryWords": 265,
+  "exceptions": 20,
+  "rankings": [
+    {
+      "category": "all",
+      "status": 200,
+      "namePolicyVersion": 2,
+      "entries": 14,
+      "masked": [
+        {
+          "id": "442c8506-72a5-4656-9af2-e573a668d9bd",
+          "nickname": "***マスター田原",
+          "score": 11000,
+          "hits": 305,
+          "max_combo": 299,
+          "rank": 4
+        },
+        {
+          "id": "dd9038bc-6b0f-47de-b000-53d407c17fc8",
+          "nickname": "*******マン",
+          "score": 6535,
+          "hits": 243,
+          "max_combo": 157,
+          "rank": 7
+        }
+      ]
+    },
+    {
+      "category": "mobile",
+      "status": 200,
+      "namePolicyVersion": 2,
+      "entries": 9,
+      "masked": [
+        {
+          "id": "442c8506-72a5-4656-9af2-e573a668d9bd",
+          "nickname": "***マスター田原",
+          "score": 11000,
+          "hits": 305,
+          "max_combo": 299,
+          "rank": 4
+        },
+        {
+          "id": "dd9038bc-6b0f-47de-b000-53d407c17fc8",
+          "nickname": "*******マン",
+          "score": 6535,
+          "hits": 243,
+          "max_combo": 157,
+          "rank": 6
+        }
+      ]
+    },
+    {
+      "category": "pc",
+      "status": 200,
+      "namePolicyVersion": 2,
+      "entries": 0,
+      "masked": []
+    }
+  ],
+  "visible": [
+    {
+      "device": "desktop",
+      "category": "all",
+      "entries": 14,
+      "namesMatchApi": true
+    },
+    {
+      "device": "desktop",
+      "category": "mobile",
+      "entries": 9,
+      "namesMatchApi": true
+    },
+    {
+      "device": "desktop",
+      "category": "pc",
+      "entries": 0,
+      "namesMatchApi": true
+    },
+    {
+      "device": "mobile",
+      "category": "all",
+      "entries": 14,
+      "namesMatchApi": true
+    },
+    {
+      "device": "mobile",
+      "category": "mobile",
+      "entries": 9,
+      "namesMatchApi": true
+    },
+    {
+      "device": "mobile",
+      "category": "pc",
+      "entries": 0,
+      "namesMatchApi": true
+    }
+  ],
+  "results": [
+    {
+      "path": "art/chick.svg",
+      "status": 200,
+      "bytes": 803,
+      "localHash": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d",
+      "deployedHash": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d",
+      "matches": true
+    },
+    {
+      "path": "art/elephant.svg",
+      "status": 200,
+      "bytes": 1040,
+      "localHash": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816",
+      "deployedHash": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816",
+      "matches": true
+    },
+    {
+      "path": "art/favicon.svg",
+      "status": 200,
+      "bytes": 208,
+      "localHash": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac",
+      "deployedHash": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac",
+      "matches": true
+    },
+    {
+      "path": "art/frog.svg",
+      "status": 200,
+      "bytes": 825,
+      "localHash": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d",
+      "deployedHash": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d",
+      "matches": true
+    },
+    {
+      "path": "art/hippo.svg",
+      "status": 200,
+      "bytes": 805,
+      "localHash": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f",
+      "deployedHash": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f",
+      "matches": true
+    },
+    {
+      "path": "art/jungle.svg",
+      "status": 200,
+      "bytes": 2710,
+      "localHash": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c",
+      "deployedHash": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c",
+      "matches": true
+    },
+    {
+      "path": "art/monkey.svg",
+      "status": 200,
+      "bytes": 1437,
+      "localHash": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1",
+      "deployedHash": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1",
+      "matches": true
+    },
+    {
+      "path": "art/tiger.svg",
+      "status": 200,
+      "bytes": 1430,
+      "localHash": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d",
+      "deployedHash": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d",
+      "matches": true
+    },
+    {
+      "path": "assets/index-DMG8-JlA.js",
+      "status": 200,
+      "bytes": 31057,
+      "localHash": "44490ee21f1377ec5b12130a0cd8f04d205cadae14fcbf157b40987e5515b6cf",
+      "deployedHash": "44490ee21f1377ec5b12130a0cd8f04d205cadae14fcbf157b40987e5515b6cf",
+      "matches": true
+    },
+    {
+      "path": "assets/index-DZReuibA.css",
+      "status": 200,
+      "bytes": 20198,
+      "localHash": "649cef0923123cb77dd93b7cd9bf289b9fb0e56305d3609c51b7ac46e55c9f74",
+      "deployedHash": "649cef0923123cb77dd93b7cd9bf289b9fb0e56305d3609c51b7ac46e55c9f74",
+      "matches": true
+    },
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 11475,
+      "localHash": "4f5ceb5f749907bae8cfe4089ef4222a0897ae23eae11637deb481174fb05ac5",
+      "deployedHash": "4f5ceb5f749907bae8cfe4089ef4222a0897ae23eae11637deb481174fb05ac5",
+      "matches": true
+    }
+  ]
+}
