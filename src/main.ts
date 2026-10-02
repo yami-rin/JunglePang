@@ -1,6 +1,7 @@
 import "./style.css";
 import { PangEngine, DEFAULT_RULES, type Animal } from "./engine";
 import { bindInputs } from "./input";
+import { bindViewport } from './viewport';
 import { PangStorage } from "./storage";
 import { PangAudio } from "./audio";
 import { JungleScene } from "./scene";
@@ -8,6 +9,7 @@ import { ANIMALS, roundAnimals, artURL } from './animals';
 import { RankingClient, type RankedRound } from './ranking';
 import { CATEGORY_LABELS, type RankingCategory } from './platform';
 
+const releaseViewport=bindViewport();
 const el = <T extends HTMLElement = HTMLElement>(id: string) => {
   const node = document.getElementById(id);
   if (!node) throw new Error(`Missing element: ${id}`);
@@ -551,6 +553,7 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
 
 if (import.meta.hot)
   import.meta.hot.dispose(() => {
+    releaseViewport();
     resize.disconnect();
     audio.stopAll();
     cancelAnimationFrame(scheduledFrame);

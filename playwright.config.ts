@@ -34,6 +34,13 @@ export default defineConfig({
         },
       },
     },
+    ...(process.env.PANG_WEBKIT === '1' ? [{
+      name: 'mobile-webkit',
+      use: {
+        ...devices['iPhone 13'],
+        launchOptions: {executablePath: process.env.PLAYWRIGHT_WEBKIT_EXECUTABLE},
+      },
+    }] : []),
   ],
   webServer: externalURL ? undefined : {
     command: "npm run preview",
