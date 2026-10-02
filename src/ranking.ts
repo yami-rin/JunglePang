@@ -1,7 +1,7 @@
 import config from './ranking-config.json';
 import type { InputRecord } from './engine';
 import { deviceType, type Device, type RankingCategory } from './platform';
-import { isNgNickname, displayNickname, NG_NAME_MESSAGE } from './name-policy';
+import { isNgNickname, displayNickname, NG_NAME_MESSAGE, NAME_POLICY_VERSION } from './name-policy';
 
 interface Identity { id: string; token: string; }
 export interface RankedRound { id: string; seed: number; rulesVersion: string; device?: Device; }
@@ -11,17 +11,21 @@ const KEY = 'jungle-pang:ranking-v2';
 export class RankingClient {
   private identity: Identity | null = null;
   private pending: Promise<Identity> | null = null;
+  private storedName = '名無しのパング';
   name = '名無しのパング';
   constructor(private readonly storage: Storage | null) {
     try {
       const value = JSON.parse(storage?.getItem(KEY) ?? 'null');
       if (value && typeof value.id === 'string' && /^[a-f0-9]{64}$/.test(value.token)) this.identity = {id:value.id,token:value.token};
-      if (value && typeof value.name === 'string') this.name = displayNickname(value.name.slice(0,12));
+      if (value && typeof value.name === 'string') {
+        this.storedName = Array.from(value.name).slice(0,12).join('');
+        this.name = displayNickname(this.storedName);
+      }
     } catch { /* A blocked store does not prevent playing. */ }
   }
   get playerId(): string | undefined { return this.identity?.id; }
   private persist(): void {
-    try { this.storage?.setItem(KEY,JSON.stringify({...this.identity,name:this.name})); } catch { /* Session identity still works. */ }
+    try { this.storage?.setItem(KEY,JSON.stringify({...this.identity,name:this.storedName})); } catch { /* Session identity still works. */ }
   }
   private async api<T>(path: string, data?: unknown, authenticated = false): Promise<T> {
     if (!config.apiURL) throw new Error('ランキングに接続できません');
@@ -52,13 +56,13 @@ export class RankingClient {
     return this.api<RankedRound>('/api/rounds',{ device: deviceType(navigator.userAgent, navigator.maxTouchPoints, (navigator as Navigator & {userAgentData?: {mobile:boolean}}).userAgentData?.mobile) },true);
   }
   async list(category: RankingCategory = 'all'): Promise<Entry[]> {
-    const {entries} = await this.api<{entries:Entry[]}>(`/api/ranking?category=${category}`);
-    return entries.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}));
+    const {entries,namePolicyVersion} = await this.api<{entries:Entry[];namePolicyVersion?:number}>(`/api/ranking?category=${category}`);
+    return namePolicyVersion === NAME_POLICY_VERSION ? entries : entries.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}));
   }
   async submit(round: RankedRound, name: string, log: InputRecord[]): Promise<SubmittedScore> {
     if (isNgNickname(name)) throw new Error(NG_NAME_MESSAGE);
     const inputs = log.filter(record=>record.outcome === 'correct' || record.outcome === 'wrong').map(({at,input})=>({at,input}));
     const result = await this.api<SubmittedScore>('/api/scores',{roundId:round.id,nickname:name,inputs},true);
-    this.name=name; this.persist(); return result;
+    this.storedName=this.name=name; this.persist(); return result;
   }
 }

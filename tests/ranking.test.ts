@@ -5,7 +5,7 @@ import { handle, replay, nickname, type Database } from '../api/worker';
 import { PangEngine } from '../src/engine';
 import { roundAnimals } from '../src/animals';
 import { deviceType } from '../src/platform';
-import {MASKED_NICKNAME,NG_NAME_MESSAGE} from '../src/name-policy';
+import {NAME_POLICY_VERSION,NG_NAME_MESSAGE} from '../src/name-policy';
 
 function database(): Database {
   const sqlite = new DatabaseSync(':memory:');
@@ -41,15 +41,16 @@ const trace = (seed: number, hits: number) => {
 describe('shared national ranking', () => {
   it('masks existing NG names in every category without changing scores, ranks or stored records',async()=>{
     const env={DB:database()};
-    const records=[['old1','おまんこ',160],['old2','う・ん・こ',120],['good','とうふ',90]] as const;
+    const records=[['old1','おまんこ',160,'お***'],['old2','う・ん・こ',120,'*・*・*'],['old3','うんこ太郎',100,'***太郎'],['old4','くうんこそ',95,'く***そ'],['good','とうふ',90,'とうふ']] as const;
     for(const [id,name,score] of records) {
       await env.DB.prepare('INSERT INTO players(id,token_hash,nickname,score,hits,max_combo,achieved_at) VALUES(?,?,?,?,16,16,5)').bind(id,id+'-hash',name,score).run();
       for(const device of ['mobile','pc']) await env.DB.prepare('INSERT INTO device_scores(player_id,device,nickname,score,hits,max_combo,achieved_at) VALUES(?,?,?,?,16,16,5)').bind(id,device,name,score).run();
     }
     for(const category of ['all','mobile','pc']) {
       const response=await handle(request(`/api/ranking?category=${category}`),env);
-      const {entries}=await response.json() as any;
-      expect(entries).toEqual(records.map(([id,name,score],index)=>({id,nickname:id==='good'?name:MASKED_NICKNAME,score,hits:16,max_combo:16,rank:index+1})));
+      const {entries,namePolicyVersion}=await response.json() as any;
+      expect(namePolicyVersion).toBe(NAME_POLICY_VERSION);
+      expect(entries).toEqual(records.map(([id,_name,score,masked],index)=>({id,nickname:masked,score,hits:16,max_combo:16,rank:index+1})));
       expect(JSON.stringify(entries)).not.toContain('おまんこ');
       expect(JSON.stringify(entries)).not.toContain('う・ん・こ');
     }
@@ -60,7 +61,7 @@ describe('shared national ranking', () => {
     const env={DB:database()}; const time=100000;
     const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
     const round=await (await handle(request('/api/rounds',{device:'mobile'},player.token),env,time)).json() as any;
-    for(const name of ['おまんこ','う ん こ','ｳﾝｺ']) {
+    for(const name of ['おまんこ','う ん こ','ｳﾝｺ','基地外太郎','氏ね','fuck','unko','う*ん*こ']) {
       const response=await handle(request('/api/scores',{roundId:round.id,nickname:name,inputs:trace(round.seed,1)},player.token),env,time+41000);
       expect(response.status).toBe(400);
       expect(await response.json()).toEqual({error:NG_NAME_MESSAGE});

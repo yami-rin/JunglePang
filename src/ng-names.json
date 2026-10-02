@@ -1,4 +1,81 @@
 {
-  "words": ["まんこ", "ちんこ", "ちんぽ", "おちんちん", "きんたま", "おっぱい", "うんこ", "うんち", "くそ", "糞", "せっくす", "おなにー", "あなる"],
-  "exceptions": ["ぱちんこ"]
+  "version": 2,
+  "groups": [
+    {
+      "category": "sexual-japanese",
+      "match": "contains",
+      "words": [
+        "まんこ", "ちんこ", "ちんぽ", "ちんちん", "ぽこちん", "ちんげ", "まんげ",
+        "陰茎", "陰嚢", "陰核", "陰毛", "金玉", "きんたま", "睾丸", "亀頭", "膣",
+        "ぺにす", "くりとりす", "ヴァギナ", "ばぎな", "おっぱい", "乳首", "ちくび",
+        "せっくす", "性交", "おなにー", "自慰", "手淫", "射精", "精液", "精子",
+        "ざーめん", "中出し", "なかだし", "顔射", "ふぇら", "くんに", "ぱいずり",
+        "いらまちお", "あなる", "けつあな", "あくめ", "勃起", "ぼっき", "乱交",
+        "輪姦", "強姦", "れいぷ", "ふぁっく", "ぽるの", "性奴隷", "せふれ",
+        "援助交際", "ぱぱ活", "売春", "買春", "淫乱", "淫語", "露出狂", "痴漢",
+        "えろ画像", "えろ動画", "えろがき", "えろおやじ", "えろ親父", "変態野郎"
+      ]
+    },
+    {
+      "category": "excretion-japanese",
+      "match": "contains",
+      "words": ["うんこ", "うんち", "くそ", "くっそ", "糞", "脱糞", "野糞", "糞尿", "大便", "小便", "しょんべん", "しょうべん", "しっこ", "げろ", "下痢便"]
+    },
+    {
+      "category": "abuse-and-threats-japanese",
+      "match": "contains",
+      "words": [
+        "死ね", "しね", "氏ね", "たひね", "くたばれ", "消えろ", "きえろ",
+        "殺す", "ころす", "殺してやる", "ころしてやる", "皆殺し", "みなごろし",
+        "ばか野郎", "馬鹿野郎", "ばかやろう", "どあほ", "ど阿呆", "あほかす",
+        "くそ野郎", "くそやろう", "ごみ野郎", "かす野郎", "どぶす"
+      ]
+    },
+    {
+      "category": "discriminatory-slurs-japanese",
+      "match": "contains",
+      "words": [
+        "きちがい", "気違い", "基地外", "がいじ", "知障", "かたわ", "つんぼ", "びっこ",
+        "穢多", "非人", "ちゃんころ", "ちょん", "じゃっぷ", "黒んぼ", "くろんぼ", "にがー", "にぐろ"
+      ]
+    },
+    {
+      "category": "drug-japanese",
+      "match": "contains",
+      "words": ["がんじゃ", "大麻", "まりふぁな", "まりふあな", "こかいん", "へろいん", "覚醒剤", "覚せい剤", "しゃぶ中"]
+    },
+    {
+      "category": "short-insults-japanese",
+      "match": "exact",
+      "words": ["ばか", "馬鹿", "あほ", "阿呆", "ぼけ", "かす", "くず", "屑", "ぶす", "でぶ", "きもい", "えろ", "えっち", "変態"]
+    },
+    {
+      "category": "profanity-sexual-and-drugs-english",
+      "match": "word",
+      "words": [
+        "fuck", "fucker", "fucking", "fuckyou", "motherfuck", "motherfucker", "motherfucking", "wtf",
+        "shit", "shitty", "shithead", "bullshit", "bitch", "bitches", "bastard", "dumbass", "ass", "asshole", "arse", "arsehole",
+        "cunt", "dick", "dickhead", "cock", "pussy", "penis", "vagina", "clitoris", "testicle", "testicles",
+        "sex", "sexy", "sexting", "porn", "porno", "pornhub", "xxx", "hentai", "orgasm", "masturbation", "masturbate",
+        "cum", "jizz", "semen", "blowjob", "handjob", "rimjob", "anal", "anus", "rape", "rapist",
+        "slut", "whore", "hoe", "wanker", "faggot", "fag", "dyke", "tranny", "nigger", "nigga", "negro", "retard", "retarded", "killyou", "kys", "sperm",
+        "fck", "fuk", "fvck", "phuck", "sh1t", "b1tch", "b!tch", "c0ck", "p0rn", "s3x", "a55hole", "n1gger", "n1gga",
+        "ganja", "cocaine", "heroin", "marijuana", "methamphetamine", "mdma"
+      ]
+    },
+    {
+      "category": "profanity-romaji",
+      "match": "word",
+      "words": [
+        "manko", "chinko", "tinko", "chinpo", "tinpo", "chinchin", "ochinchin", "pokochin", "kintama", "oppai",
+        "unko", "unco", "unchi", "unti", "kuso", "kusso", "kusoyarou", "sekkusu", "onani", "onanie",
+        "zamen", "zaamen", "nakadashi", "fela", "fera", "kunnilingus", "paizuri", "anaru",
+        "korosu", "kutabare", "kichigai", "gaiji", "bakayarou", "bakayaro"
+      ]
+    }
+  ],
+  "exceptions": [
+    "ぱちんこ", "ちんちん電車", "ちんちんでんしゃ", "うんちく", "しねま", "しねこん", "しねらりあ",
+    "やくそく", "やくそう", "もくそう", "しょくそう", "ちょんまげ", "ちょんぎる", "ちょん切る", "ちょんちょん", "がいじゅう", "がいじん", "ちんげんさい", "まんげつ", "かげろう"
+  ]
 }

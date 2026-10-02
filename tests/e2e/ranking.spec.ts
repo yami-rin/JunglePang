@@ -9,17 +9,30 @@ test('NG names from old responses and saved preferences are masked in all rankin
   await page.addInitScript(()=>localStorage.setItem('jungle-pang:ranking-v2',JSON.stringify({name:'おまんこ'})));
   await page.route(`${config.apiURL}/api/ranking*`,route=>route.fulfill({json:{entries:[
     {id:'old1',nickname:'おまんこ',score:160,rank:1},
-    {id:'old2',nickname:'う・ん・こ',score:120,rank:2},
+    {id:'old2',nickname:'うんこ太郎',score:120,rank:2},
     {id:'good',nickname:'とうふ',score:90,rank:3},
   ]}}));
   await page.goto('./');
-  await expect(page.locator('#nickname')).toHaveValue('＊＊＊');
+  await expect(page.locator('#nickname')).toHaveValue('お***');
   await page.locator('#ranking').click();
   for(const category of ['全体','スマホ','PC']) {
     await page.getByRole('tab',{name:category,exact:true}).click();
-    await expect(page.locator('#ranking-list .ranking-name')).toHaveText(['＊＊＊','＊＊＊','とうふ']);
+    await expect(page.locator('#ranking-list .ranking-name')).toHaveText(['お***','***太郎','とうふ']);
     await expect(page.locator('#ranking-list .ranking-score')).toHaveText(['160 pt','120 pt','90 pt']);
     await expect(page.locator('#ranking-list .ranking-place')).toHaveText(['1','2','3']);
+  }
+});
+
+test('current API masks are displayed once and preserve the remaining nickname in every tab',async({page})=>{
+  await page.route(`${config.apiURL}/api/ranking*`,route=>route.fulfill({json:{namePolicyVersion:2,entries:[
+    {id:'old',nickname:'く***そ',score:120,rank:1},
+    {id:'latin',nickname:'田中 ****',score:90,rank:2},
+  ]}}));
+  await page.goto('./');
+  await page.locator('#ranking').click();
+  for(const category of ['全体','スマホ','PC']) {
+    await page.getByRole('tab',{name:category,exact:true}).click();
+    await expect(page.locator('#ranking-list .ranking-name')).toHaveText(['く***そ','田中 ****']);
   }
 });
 

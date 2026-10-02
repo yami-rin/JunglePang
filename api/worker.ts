@@ -1,6 +1,6 @@
 import { PangEngine, DEFAULT_RULES, type Animal } from '../src/engine';
 import { deviceType, type Device } from '../src/platform';
-import { isNgNickname, displayNickname, NG_NAME_MESSAGE } from '../src/name-policy';
+import { isNgNickname, displayNickname, NG_NAME_MESSAGE, NAME_POLICY_VERSION } from '../src/name-policy';
 
 interface Statement {
   bind(...values: unknown[]): Statement;
@@ -103,7 +103,7 @@ export async function handle(request: Request, env: Env, now = Date.now()): Prom
       const statement = env.DB.prepare(`WITH top AS (${sql} ORDER BY score DESC,achieved_at ASC,id ASC LIMIT 50) SELECT id,nickname,score,hits,max_combo,RANK() OVER(ORDER BY score DESC) AS rank FROM top ORDER BY score DESC,achieved_at ASC,id ASC`);
       const { results } = await (category === 'all' ? statement : statement.bind(category)).all<{id:string;nickname:string;score:number;hits:number;max_combo:number;rank:number}>();
       headers['Cache-Control']='public, max-age=10';
-      return json({category,entries:results.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}))});
+      return json({category,namePolicyVersion:NAME_POLICY_VERSION,entries:results.map(entry=>({...entry,nickname:displayNickname(entry.nickname)}))});
     }
     if (request.method !== 'POST') throw new ApiError(404,'見つかりません');
     // Hash the IP with the date; raw addresses never enter the database.
