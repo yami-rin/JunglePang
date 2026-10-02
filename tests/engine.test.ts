@@ -3,6 +3,27 @@ import { PangEngine, type Animal } from "../src/engine";
 import { PangStorage, STORAGE_KEY, type StorageLike } from "../src/storage";
 
 describe("40-second rules", () => {
+  it('caps consecutive animals at four across the initial tower and every refill',()=>{
+    let longest = 0;
+    for (let seed=1;seed<=128;seed++) {
+      const engine = new PangEngine(seed);
+      const sequence = [...engine.queue];
+      engine.start(0);
+      for (let i=0;i<2500;i++) {
+        engine.input(engine.queue[0],i);
+        sequence.push(engine.queue.at(-1)!);
+      }
+      let streak=0;
+      for (let i=0;i<sequence.length;i++) {
+        streak = sequence[i] === sequence[i-1] ? streak+1 : 1;
+        longest = Math.max(longest,streak);
+        if (streak>4) throw new Error(`Seed ${seed}: ${streak} consecutive animals at ${i}`);
+      }
+    }
+    expect(longest).toBe(4);
+    expect(new PangEngine(1).queue).toEqual(['tiger','tiger','tiger','tiger','monkey','monkey']);
+    expect(new PangEngine(1,{maxConsecutive:0}).queue.slice(0,5)).toEqual(Array(5).fill('tiger'));
+  });
   it("does not accept input before starting, and only starts once", () => {
     const engine = new PangEngine(1, {}, ["monkey", "tiger"]);
     expect(engine.input("monkey", 20)).toBe("inactive");
@@ -170,30 +191,32 @@ describe("device-local persistence", () => {
       data = next;
     },
   });
-  it("saves and loads best, volume, mute, and music", () => {
+  it("saves and loads best, volume, mute, music, and AutoReset", () => {
     const backend = fake(null);
     const first = new PangStorage(backend);
     expect(
-      first.update({ best: 1900, volume: 0.7, muted: true, music: false }),
+      first.update({ best: 1900, volume: 0.7, muted: true, music: false, autoReset: true }),
     ).toBe(true);
     expect(new PangStorage(backend).value).toMatchObject({
       best: 1900,
       volume: 0.7,
       muted: true,
       music: false,
+      autoReset: true,
     });
     expect(STORAGE_KEY).toBe("jungle-pang:v1");
   });
   it("recovers from malformed and invalid saved data", () => {
     expect(new PangStorage(fake("{broken")).value.best).toBe(0);
     const invalid = new PangStorage(
-      fake('{"best":-10,"volume":12,"muted":"false","music":null}'),
+      fake('{"best":-10,"volume":12,"muted":"false","music":null,"autoReset":"true"}'),
     );
     expect(invalid.value).toMatchObject({
       best: 0,
       volume: 1,
       muted: false,
       music: true,
+      autoReset: false,
     });
     expect(new PangStorage(fake("null")).value.best).toBe(0);
   });

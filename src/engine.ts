@@ -1,4 +1,4 @@
-import rules from "./rules.json";
+import rules from "./rules.json" with {type:'json'};
 
 export type Animal = "monkey" | "tiger";
 export type Phase = "ready" | "running" | "locked" | "finished";
@@ -6,6 +6,7 @@ export type EndReason = "time" | "background" | "quit";
 export type Outcome = "correct" | "wrong" | "locked" | "inactive" | "expired";
 export type Rules = typeof rules;
 export const DEFAULT_RULES: Readonly<Rules> = Object.freeze({ ...rules });
+export const RULES_VERSION = '3';
 
 export interface InputRecord {
   at: number;
@@ -44,6 +45,8 @@ export class PangEngine {
   readonly log: InputRecord[] = [];
   private seed: number;
   private now = 0;
+  private lastAnimal: Animal | undefined;
+  private consecutive = 0;
 
   constructor(
     seed = 1,
@@ -53,6 +56,7 @@ export class PangEngine {
     this.rules = { ...DEFAULT_RULES, ...overrides };
     this.seed = seed >>> 0 || 1;
     this.queue = initialQueue?.slice(0, this.rules.visiblePieces) ?? [];
+    for (const animal of this.queue) this.recordGenerated(animal);
     while (this.queue.length < this.rules.visiblePieces)
       this.queue.push(this.nextAnimal());
   }
@@ -147,6 +151,15 @@ export class PangEngine {
     x ^= x >>> 17;
     x ^= x << 5;
     this.seed = x >>> 0;
-    return (this.seed & 1) === 0 ? "monkey" : "tiger";
+    let animal: Animal = (this.seed & 1) === 0 ? "monkey" : "tiger";
+    if (this.rules.maxConsecutive > 0 && animal === this.lastAnimal && this.consecutive >= this.rules.maxConsecutive)
+      animal = animal === 'monkey' ? 'tiger' : 'monkey';
+    this.recordGenerated(animal);
+    return animal;
+  }
+
+  private recordGenerated(animal: Animal): void {
+    this.consecutive = animal === this.lastAnimal ? this.consecutive + 1 : 1;
+    this.lastAnimal = animal;
   }
 }

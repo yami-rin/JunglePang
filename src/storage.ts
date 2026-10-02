@@ -6,6 +6,7 @@ export interface Preferences {
   muted: boolean;
   music: boolean;
   randomAnimals: boolean;
+  autoReset: boolean;
   animals: AnimalSelection;
 }
 export interface StorageLike {
@@ -18,6 +19,7 @@ const defaults: Preferences = {
   muted: false,
   music: true,
   randomAnimals: true,
+  autoReset: false,
   animals: { left: 'monkey', right: 'elephant' },
 };
 
@@ -43,6 +45,7 @@ export class PangStorage {
       if (typeof v.muted === "boolean") this.value.muted = v.muted;
       if (typeof v.music === "boolean") this.value.music = v.music;
       if (typeof v.randomAnimals === 'boolean') this.value.randomAnimals = v.randomAnimals;
+      if (typeof v.autoReset === 'boolean') this.value.autoReset = v.autoReset;
       if (validSelection(v.animals)) this.value.animals = { ...v.animals };
     } catch {
       this.available = false;

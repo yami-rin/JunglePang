@@ -2,6 +2,7 @@
   "durationMs": 40000,
   "missLockMs": 650,
   "visiblePieces": 6,
+  "maxConsecutive": 4,
   "basePoints": 10,
   "comboStep": 10,
   "comboBonus": 5,

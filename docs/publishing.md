@@ -19,6 +19,7 @@
 - NGネーム辞書は `src/ng-names.json`。語・例外・照合方式を変更したら辞書の `version` を増やし、APIを先に配信してフロントも再ビルド・公開する。編集時の確認は [name-policy.md](name-policy.md) を参照。既存名は取得時にNG部分だけを半角 `*` にするため、DBのUPDATEや得点の削除は不要
 - API反映後に `/api/health`、`/api/ranking` と、通常の40秒ラウンドからの登録を確認する
 - 0.3.0のmigrationは既存の得点を残したまま端末別の表を追加する。APIを先に更新し、`/api/ranking?category=all|mobile|pc` の取得を確認してからゲームを公開する
+- 0.3.4では `0003_round_rules.sql` でラウンドのルール版を追加する。既存ラウンドは版2のまま、更新後の発行は版3（最大4連続）になる。最高記録の書換・削除は行わない。APIの `/api/health` が版3になったことを確認してからフロントを配信する
 - `tests/ranking.test.ts` は実際のSQLをインメモリSQLiteへ実行して保存・並び順・改ざん・再送・期限・制限を検証する
 - 通常の自動試験は公開得点を作らない。実配信への書込試験を明示有効化した際は、検証用IDだけの `device_scores`、`rounds`、`players` を確認・削除する
 

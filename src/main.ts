@@ -1,5 +1,5 @@
 import "./style.css";
-import { PangEngine, DEFAULT_RULES, type Animal } from "./engine";
+import { PangEngine, DEFAULT_RULES, RULES_VERSION, type Animal } from "./engine";
 import { bindInputs } from "./input";
 import { bindViewport } from './viewport';
 import { PangStorage } from "./storage";
@@ -39,6 +39,7 @@ const ui = {
   volume: el<HTMLInputElement>("volume"),
   volumeValue: el("volume-value"),
   music: el<HTMLInputElement>("music"),
+  autoReset: el<HTMLInputElement>('auto-reset'),
 };
 const formatter = new Intl.NumberFormat("ja-JP");
 let backend: Storage | null = null;
@@ -121,6 +122,9 @@ function updatePreferences(): void {
   ui.volume.value = String(Math.round(storage.value.volume * 100));
   ui.volumeValue.textContent = `${ui.volume.value}%`;
   ui.music.checked = storage.value.music;
+  ui.autoReset.checked = storage.value.autoReset;
+  el('play-hint').textContent = storage.value.autoReset ? 'AutoReset ON · ミスで最初から' : '最下段と同じ動物のボタンを押す';
+  el('howto-foot').textContent = storage.value.autoReset ? '制限時間40秒 · ミスで即リセット' : '制限時間40秒 · ミスで0.65秒間入力停止';
   showStorageStatus();
 }
 function updateBest(): void {
@@ -138,6 +142,7 @@ function setScreen(value: typeof screen): void {
   ui.tiger.disabled = value !== "playing";
   ui.hint.hidden = value !== "playing";
   el('quick-retry').hidden = value !== 'playing' && value !== 'countdown';
+  if (value !== 'countdown') delete ui.app.dataset.preparing;
 }
 function updateHud(now: number): void {
   const remaining = engine.remaining(now);
@@ -174,24 +179,7 @@ function updateHud(now: number): void {
     audio.warning();
   }
 }
-function startRound(): void {
-  if (screen === "loading") return;
-  audio.unlock();
-  audio.stopAll();
-  const seed = crypto.getRandomValues(new Uint32Array(1))[0];
-  const epoch = ++roundEpoch;
-  rankedRound = null;
-  rankingReason = debugMode ? '検証モードの記録は全国に登録できません' : '接続が間に合わなかったため、今回は端末の記録のみです';
-  if (!debugMode) void ranking.start().then(round => {
-    if (epoch !== roundEpoch || screen !== 'countdown' || performance.now()-countdownStarted >= DEFAULT_RULES.countdownMs) return;
-    if (round.rulesVersion !== '2') { rankingReason='ページを再読み込みしてからもう一度プレイしてください'; return; }
-    rankedRound = round;
-    roundSeed = round.seed;
-    engine = new PangEngine(round.seed);
-    configureAnimals(round.seed);
-    scene.sync(engine.queue);
-    rankingReason = '';
-  }).catch(() => { if (epoch === roundEpoch) rankingReason = '通信できないため、今回は端末の記録のみです'; });
+function resetRound(seed: number): void {
   roundSeed = seed;
   engine = new PangEngine(seed);
   configureAnimals(seed);
@@ -200,15 +188,62 @@ function startRound(): void {
   resultShown = false;
   savedResult = false;
   warningSecond = 0;
-  countdownStarted = performance.now();
-  countdownStage = -1;
+  for (const animal of ['monkey','tiger'] as const) {
+    clearTimeout(pressTimers[animal]);
+    ui[animal].classList.remove('pressed');
+  }
   ui.feedback.classList.remove("show");
+}
+async function startRound(): Promise<void> {
+  if (screen === "loading") return;
+  audio.unlock();
+  audio.stopAll();
+  const epoch = ++roundEpoch;
+  rankedRound = null;
+  rankingReason = debugMode ? '検証モードの記録は全国に登録できません' : '接続が間に合わなかったため、今回は端末の記録のみです';
+  resetRound(crypto.getRandomValues(new Uint32Array(1))[0]);
+  ui.app.dataset.preparing = 'true';
+  ui.countdown.textContent = '準備中…';
   ui.countdown.classList.remove("go");
   setScreen("countdown");
-  updateHud(countdownStarted);
+  updateHud(performance.now());
   ui.start.blur();
   el("retry").blur();
+  if (!debugMode) {
+    let timeout: ReturnType<typeof setTimeout> | undefined;
+    try {
+      // Choose the seed before showing the tower. A late response cannot replace it.
+      const round = await Promise.race([
+        ranking.start(),
+        new Promise<null>(resolve=>{ timeout=setTimeout(()=>resolve(null),1200); }),
+      ]);
+      if (epoch !== roundEpoch) return;
+      if (round?.rulesVersion === RULES_VERSION) {
+        rankedRound = round;
+        resetRound(round.seed);
+        rankingReason = '';
+      } else if (round) rankingReason = 'ページを再読み込みしてからもう一度プレイしてください';
+    } catch {
+      if (epoch === roundEpoch) rankingReason = '通信できないため、今回は端末の記録のみです';
+    } finally { clearTimeout(timeout); }
+  }
+  if (epoch !== roundEpoch) return;
+  delete ui.app.dataset.preparing;
+  countdownStarted = performance.now();
+  countdownStage = -1;
   frame();
+  scheduleFrame();
+}
+function autoResetRound(now: number): void {
+  roundEpoch++;
+  audio.stopAll();
+  // Reuse the unsubmitted challenge and original seed; rapid misses need no API calls.
+  resetRound(roundSeed);
+  engine.start(now);
+  setScreen('playing');
+  audio.wrong();
+  audio.startMusic();
+  updateHud(now);
   scheduleFrame();
 }
 function showTitle(): void {
@@ -267,6 +302,7 @@ function presentResult(): void {
 function frame(): void {
   const now = performance.now();
   if (screen === "countdown") {
+    if (ui.app.dataset.preparing) return;
     const elapsed = now - countdownStarted;
     const stage = Math.floor(elapsed / 600);
     if (elapsed >= DEFAULT_RULES.countdownMs) {
@@ -310,6 +346,10 @@ function input(animal: Animal): void {
       70,
     );
   } else if (outcome === "wrong") {
+    if (storage.value.autoReset) {
+      autoResetRound(now);
+      return;
+    }
     audio.wrong();
     scene.miss();
     ui.feedback.classList.remove("show");
@@ -354,6 +394,10 @@ ui.volume.addEventListener("input", () => {
 ui.volume.addEventListener("change", () => audio.countdown());
 ui.music.addEventListener("change", () => {
   storage.update({ music: ui.music.checked });
+  updatePreferences();
+});
+ui.autoReset.addEventListener('change',()=>{
+  storage.update({autoReset:ui.autoReset.checked});
   updatePreferences();
 });
 

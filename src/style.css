@@ -56,6 +56,8 @@
 .animal-option input:disabled + span { opacity: .3; cursor: default; }
 .title-content { max-height: 100%; overflow-y: auto; }
 .game-shell:is([data-screen="ready"],[data-screen="loading"]) :is(.hud,.timer-track,.controls-area,#game-canvas) { visibility: hidden; }
+.game-shell[data-preparing] #game-canvas { visibility: hidden; }
+.game-shell[data-preparing] .countdown { font-size: 22px; }
 .result-content { max-height: 100%; overflow-y: auto; }
 @container viewport (max-height: 740px) {
   .result-content h2 { font-size: 25px; }

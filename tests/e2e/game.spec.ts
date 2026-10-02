@@ -6,6 +6,7 @@ interface Snapshot {
   phase: string;
   screen: string;
   queue: ("monkey" | "tiger")[];
+  animals: {monkey:{id:string};tiger:{id:string}};
   score: number;
   combo: number;
   hits: number;

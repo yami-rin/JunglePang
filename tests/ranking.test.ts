@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { DatabaseSync } from 'node:sqlite';
 import { readFileSync, readdirSync } from 'node:fs';
 import { handle, replay, nickname, type Database } from '../api/worker';
-import { PangEngine } from '../src/engine';
+import { PangEngine, RULES_VERSION } from '../src/engine';
 import { roundAnimals } from '../src/animals';
 import { deviceType } from '../src/platform';
 import {NAME_POLICY_VERSION,NG_NAME_MESSAGE} from '../src/name-policy';
@@ -39,6 +39,27 @@ const trace = (seed: number, hits: number) => {
   return engine.log.map(({at,input})=>({at,input}));
 };
 describe('shared national ranking', () => {
+  it('replays new capped sequences and old uncapped challenges with their own rules',async()=>{
+    const env={DB:database()}; const time=100000;
+    const player=await (await handle(request('/api/players',{}),env,time)).json() as any;
+    const round=await (await handle(request('/api/rounds',{},player.token),env,time)).json() as any;
+    expect(round.rulesVersion).toBe(RULES_VERSION);
+    expect(await env.DB.prepare('SELECT rules_version FROM rounds WHERE id=?').bind(round.id).first()).toMatchObject({rules_version:RULES_VERSION});
+    const current = new PangEngine(1);
+    const legacy = new PangEngine(1,{maxConsecutive:0});
+    for (const engine of [current,legacy]) {
+      engine.start(0);
+      for (let i=0;i<40;i++) engine.input(engine.queue[0],100+i*100);
+    }
+    const inputs=(engine:PangEngine)=>engine.log.map(({at,input})=>({at,input}));
+    expect(replay(1,inputs(current)).hits).toBe(40);
+    expect(replay(1,inputs(legacy),'2').hits).toBe(40);
+    expect(replay(1,inputs(legacy)).hits).toBeLessThan(40);
+    await env.DB.prepare('INSERT INTO rounds(id,player_id,seed,created_at,device) VALUES(?,?,?,?,?)').bind('legacy',player.id,1,time,'pc').run();
+    const result=await handle(request('/api/scores',{roundId:'legacy',nickname:'旧ルール',inputs:inputs(legacy)},player.token),env,time+45000);
+    expect(result.status).toBe(200);
+    expect(await result.json()).toMatchObject({score:legacy.score});
+  });
   it('masks existing NG names in every category without changing scores, ranks or stored records',async()=>{
     const env={DB:database()};
     const records=[['old1','おまんこ',160,'お***'],['old2','う・ん・こ',120,'*・*・*'],['old3','うんこ太郎',100,'***太郎'],['old4','くうんこそ',95,'く***そ'],['good','とうふ',90,'とうふ']] as const;

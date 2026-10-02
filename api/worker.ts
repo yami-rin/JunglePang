@@ -1,4 +1,4 @@
-import { PangEngine, DEFAULT_RULES, type Animal } from '../src/engine';
+import { PangEngine, DEFAULT_RULES, RULES_VERSION, type Animal } from '../src/engine';
 import { deviceType, type Device } from '../src/platform';
 import { isNgNickname, displayNickname, NG_NAME_MESSAGE, NAME_POLICY_VERSION } from '../src/name-policy';
 
@@ -46,9 +46,10 @@ async function authenticate(request: Request, db: Database): Promise<Player> {
   if (!player) throw new ApiError(401, '参加情報を再取得してください');
   return player;
 }
-export function replay(seed: number, inputs: unknown): PangEngine {
+export function replay(seed: number, inputs: unknown, rulesVersion = RULES_VERSION): PangEngine {
   if (!Array.isArray(inputs) || inputs.length === 0 || inputs.length > 2500) throw new ApiError(400, '入力記録が不正です');
-  const engine = new PangEngine(seed);
+  if (rulesVersion !== '2' && rulesVersion !== RULES_VERSION) throw new ApiError(400, 'ゲームのルールが不正です');
+  const engine = new PangEngine(seed, rulesVersion === '2' ? {maxConsecutive:0} : {});
   engine.start(0);
   let previous = -1;
   for (const value of inputs) {
@@ -92,7 +93,7 @@ export async function handle(request: Request, env: Env, now = Date.now()): Prom
   try {
     if (origin && !origins.has(origin)) throw new ApiError(403, 'この公開元からは利用できません');
     if (request.method === 'OPTIONS') return new Response(null,{status:204,headers});
-    if (request.method === 'GET' && url.pathname === '/api/health') return json({ok:true,rulesVersion:'2'});
+    if (request.method === 'GET' && url.pathname === '/api/health') return json({ok:true,rulesVersion:RULES_VERSION});
     if (request.method === 'GET' && url.pathname === '/api/ranking') {
       const category = url.searchParams.get('category') ?? 'all';
       if (category !== 'all' && category !== 'mobile' && category !== 'pc') throw new ApiError(400,'ランキングの種類が不正です');
@@ -124,25 +125,25 @@ export async function handle(request: Request, env: Env, now = Date.now()): Prom
       await limited(env.DB,'round-ip:'+ip,now,100,60000);
       const id = crypto.randomUUID();
       const seed = crypto.getRandomValues(new Uint32Array(1))[0] || 1;
-      await env.DB.prepare('INSERT INTO rounds(id,player_id,seed,created_at,device) VALUES(?,?,?,?,?)').bind(id,player.id,seed,now,device).run();
+      await env.DB.prepare('INSERT INTO rounds(id,player_id,seed,created_at,device,rules_version) VALUES(?,?,?,?,?,?)').bind(id,player.id,seed,now,device,RULES_VERSION).run();
       // Bounded cleanup uses an indexed age threshold. No leaderboard entries are removed.
       await env.DB.batch([
         env.DB.prepare('DELETE FROM rounds WHERE created_at<?').bind(now-86400000),
         env.DB.prepare('DELETE FROM rate_limits WHERE expires_at<?').bind(now),
       ]);
-      return json({id,seed,rulesVersion:'2',device},201);
+      return json({id,seed,rulesVersion:RULES_VERSION,device},201);
     }
     if (url.pathname === '/api/scores') {
       await limited(env.DB,'submit:'+player.id,now,20,3600000);
       const data = await body(request);
       const name = nickname(data.nickname);
       if (typeof data.roundId !== 'string' || data.roundId.length > 64) throw new ApiError(400,'ゲームの記録が不正です');
-      const round = await env.DB.prepare('SELECT seed,created_at,consumed,score,device FROM rounds WHERE id=? AND player_id=?').bind(data.roundId,player.id).first<{seed:number;created_at:number;consumed:string|null;score:number|null;device:string}>();
+      const round = await env.DB.prepare('SELECT seed,created_at,consumed,score,device,rules_version FROM rounds WHERE id=? AND player_id=?').bind(data.roundId,player.id).first<{seed:number;created_at:number;consumed:string|null;score:number|null;device:string;rules_version:string}>();
       if (!round) throw new ApiError(400,'ゲームの記録が見つかりません');
       if (round.consumed) return json({accepted:true,...await summary(env.DB,player.id,round.device)});
       if (now-round.created_at < DEFAULT_RULES.durationMs) throw new ApiError(400,'40秒終了した記録だけ登録できます');
       if (now-round.created_at > 600000) throw new ApiError(410,'登録期限が過ぎました。もう一度プレイしてください');
-      const engine = replay(round.seed,data.inputs);
+      const engine = replay(round.seed,data.inputs,round.rules_version);
       if (engine.score <= 0) throw new ApiError(400,'1回以上正解した記録を登録できます');
       const claim = crypto.randomUUID();
       const updated = await env.DB.batch([
