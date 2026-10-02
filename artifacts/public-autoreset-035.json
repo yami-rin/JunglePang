@@ -1,0 +1,265 @@
+{
+  "source": "688664571c318ce7d57ad9a447dc8b797068a80b",
+  "version": "0.3.5",
+  "site": "https://yami-rin.github.io/JunglePang/",
+  "verifiedAt": "2026-10-02T18:22:55.333Z",
+  "files": [
+    {
+      "path": "art/chick.svg",
+      "bytes": 803,
+      "sha256": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d"
+    },
+    {
+      "path": "art/elephant.svg",
+      "bytes": 1040,
+      "sha256": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816"
+    },
+    {
+      "path": "art/favicon.svg",
+      "bytes": 208,
+      "sha256": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac"
+    },
+    {
+      "path": "art/frog.svg",
+      "bytes": 825,
+      "sha256": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d"
+    },
+    {
+      "path": "art/hippo.svg",
+      "bytes": 805,
+      "sha256": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f"
+    },
+    {
+      "path": "art/jungle.svg",
+      "bytes": 2710,
+      "sha256": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c"
+    },
+    {
+      "path": "art/monkey.svg",
+      "bytes": 1437,
+      "sha256": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1"
+    },
+    {
+      "path": "art/tiger.svg",
+      "bytes": 1430,
+      "sha256": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d"
+    },
+    {
+      "path": "assets/index-B0mRb74H.js",
+      "bytes": 34613,
+      "sha256": "f6ce6fc637366ef135ed43c8d02327891995037923b63081efc5b3bda00ca17d"
+    },
+    {
+      "path": "assets/index-BzdgtFpm.css",
+      "bytes": 20998,
+      "sha256": "16720f6bdfbcaf765223d63d41974ee252014f8f37b81ed152b47f9d134f1b09"
+    },
+    {
+      "path": "index.html",
+      "bytes": 11772,
+      "sha256": "289bb5c2f0b297ca833dd5f874e2bffce6938dcd89f7cf13b74d18a647530f68"
+    }
+  ],
+  "api": {
+    "health": {
+      "ok": true,
+      "rulesVersion": "3",
+      "autoResetVersion": 1
+    },
+    "workerVersion": "3f2d016d-936c-49c6-baed-ceee504e5fca"
+  },
+  "browsers": [
+    {
+      "name": "chromium",
+      "version": "151.0.7922.34",
+      "device": "Pixel 7",
+      "initial": [
+        "hippo.svg",
+        "frog.svg",
+        "hippo.svg",
+        "frog.svg",
+        "frog.svg",
+        "frog.svg"
+      ],
+      "resets": [
+        {
+          "hitsBefore": 1,
+          "after": [
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg",
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 4,
+          "after": [
+            "frog.svg",
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg",
+            "hippo.svg",
+            "frog.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 8,
+          "after": [
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg",
+            "hippo.svg",
+            "frog.svg",
+            "frog.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 2,
+          "after": [
+            "hippo.svg",
+            "hippo.svg",
+            "hippo.svg",
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 6,
+          "after": [
+            "frog.svg",
+            "hippo.svg",
+            "frog.svg",
+            "hippo.svg",
+            "frog.svg",
+            "frog.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        }
+      ]
+    },
+    {
+      "name": "webkit",
+      "version": "26.6",
+      "device": "iPhone 13",
+      "initial": [
+        "elephant.svg",
+        "elephant.svg",
+        "monkey.svg",
+        "monkey.svg",
+        "monkey.svg",
+        "elephant.svg"
+      ],
+      "resets": [
+        {
+          "hitsBefore": 1,
+          "after": [
+            "monkey.svg",
+            "monkey.svg",
+            "elephant.svg",
+            "elephant.svg",
+            "elephant.svg",
+            "elephant.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 4,
+          "after": [
+            "elephant.svg",
+            "elephant.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "monkey.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 8,
+          "after": [
+            "monkey.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "elephant.svg",
+            "elephant.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 2,
+          "after": [
+            "monkey.svg",
+            "elephant.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "elephant.svg",
+            "elephant.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        },
+        {
+          "hitsBefore": 6,
+          "after": [
+            "elephant.svg",
+            "monkey.svg",
+            "elephant.svg",
+            "monkey.svg",
+            "monkey.svg",
+            "monkey.svg"
+          ],
+          "score": 0,
+          "time": "40s",
+          "changed": true,
+          "animalsPreserved": true
+        }
+      ]
+    }
+  ],
+  "liveRegistration": {
+    "testRecordsRemoved": true,
+    "resetsBeforeFinalAttempt": 3,
+    "score": 135,
+    "hits": 12,
+    "projects": [
+      "desktop-chromium",
+      "mobile-chromium"
+    ],
+    "passed": 2,
+    "maxCombo": 12
+  }
+}
