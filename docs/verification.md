@@ -195,3 +195,11 @@ NG辞書を265項目・8分類へ拡充し、一般語の例外20項目と3つ�
 - 単体 **33/33 PASS**、型検査・ビルドPASS。採点・入力集計・ランキングAPIに変更なし
 
 WebKitを追加確認する場合は `PANG_WEBKIT=1` でPlaywrightを実行する。対応ブラウザは `npx playwright install webkit` で取得でき、`PLAYWRIGHT_WEBKIT_EXECUTABLE` による明示指定も可能。物理スマホ・実際のSafari UI・実キーボードは未検証。
+
+### 0.3.3の公開確認
+
+配信ソース: `1997486141afaeaaef239c94bf4d0d1391432763`。[Actions run 36985813230](https://github.com/yami-rin/JunglePang/actions/runs/36985813230) は単体・ビルド・配信ともSUCCESS。
+
+公開URLでPC・Pixel 7・iPhone 13模擬 **13 PASS / 5 SKIP（18.0秒）**。ネイティブの連続タップ後も拡大率1、ゲーム・塔・ボタンの矩形保持、入力2回が正解2回だけになること、回転、PCのresize、ランキングの内部スクロール、キーボード相当の可視領域縮小後の入力欄、通常起動を確認。
+
+さらに公開画面をChromium 151.0.7922.34とWebKit 26.6で取得し、390×844から390×932へ表示領域が伸びてもゲーム面・塔・ボタンの矩形が一致することを確認。押下アニメーションの終了を待って比較した。各エンジンのプレイ画面を目視確認し、2入力・20点・拡大率1を取得。公開した全11ファイルがローカルビルドとSHA-256一致。証拠は `artifacts/public-viewport-033.json` と `artifacts/viewport-033-chromium.png`・`artifacts/viewport-033-webkit.png`。公開ランキングへの得点書込は行っていない。
