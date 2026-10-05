@@ -20,6 +20,7 @@
 .tower-stack { position: absolute; inset: 0; pointer-events: none; }
 #game-canvas { isolation: isolate; }
 .title-ranking { font-size: 12px; padding: 7px; margin-top: 4px; }
+/* local-auto-input:start */
 .auto-input-open { min-height: 44px; font-size: 12px; }
 .auto-input-description { font-size: 12px; line-height: 1.8; margin: 14px 0; }
 .auto-input-rate-label { display: block; font-size: 13px; font-weight: 700; margin: 18px 0 8px; }
@@ -29,6 +30,7 @@
 #auto-input-live-rate { flex: 1; min-width: 0; max-width: 180px; min-height: 44px; padding: 6px; background: #fff9df; color: var(--ink); border: 1px solid #78995d; border-radius: 9px; font-size: 16px; }
 #stop-auto-input { flex-shrink: 0; min-height: 44px; padding: 10px 16px; border-radius: 10px; background: #315c40; color: #fff8db; font-size: 13px; font-weight: 700; }
 #result-auto-input { font-size: 12px; line-height: 1.8; margin: 8px 0; }
+/* local-auto-input:end */
 .result-ranking { margin: 10px 0 12px; }
 .result-ranking label { display: block; font-size: 10px; text-align: left; margin-bottom: 6px; }
 .ranking-submit-row { display: flex; gap: 6px; }

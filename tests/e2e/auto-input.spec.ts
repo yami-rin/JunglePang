@@ -3,6 +3,8 @@ import config from '../../src/ranking-config.json' with {type:'json'};
 import {PangEngine,RULES_VERSION} from '../../src/engine';
 import {mkdir,writeFile} from 'node:fs/promises';
 
+test.skip(process.env.PANG_LOCAL_AUTO_INPUT !== '1', '自動入力はローカルの開発サーバー専用');
+
 declare global { interface Window { __autoInputTaps:number[]; } }
 
 async function scoringState(page:Page) {

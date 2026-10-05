@@ -49,7 +49,7 @@ export class PangStorage {
       if (typeof v.music === "boolean") this.value.music = v.music;
       if (typeof v.randomAnimals === 'boolean') this.value.randomAnimals = v.randomAnimals;
       if (typeof v.autoReset === 'boolean') this.value.autoReset = v.autoReset;
-      if (validAutoInputRate(v.autoInputRate)) this.value.autoInputRate = v.autoInputRate;
+      if (import.meta.env.DEV && validAutoInputRate(v.autoInputRate)) this.value.autoInputRate = v.autoInputRate;
       if (validSelection(v.animals)) this.value.animals = { ...v.animals };
     } catch {
       this.available = false;

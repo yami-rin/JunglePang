@@ -1,5 +1,6 @@
 import { defineConfig, devices } from "@playwright/test";
 const externalURL = process.env.PANG_E2E_URL;
+const localAutomation = process.env.PANG_LOCAL_AUTO_INPUT === '1';
 
 // PLAYWRIGHT_CHROMIUM_EXECUTABLE can reuse an existing local browser installation.
 export default defineConfig({
@@ -43,7 +44,7 @@ export default defineConfig({
     }] : []),
   ],
   webServer: externalURL ? undefined : {
-    command: "npm run preview",
+    command: localAutomation ? "npm run dev" : "npm run preview",
     url: "http://127.0.0.1:5177",
     reuseExistingServer: !process.env.CI,
   },

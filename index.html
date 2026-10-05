@@ -40,10 +40,12 @@
 
       <footer class="controls-area">
         <div class="play-hint" id="play-hint">最下段と同じ動物のボタンを押す</div>
+        <!-- local-auto-input:start -->
         <div class="auto-input-controls" id="auto-input-controls" hidden>
           <label for="auto-input-live-rate">自動入力<select id="auto-input-live-rate" aria-label="自動入力の速度"></select></label>
           <button id="stop-auto-input" type="button">停止</button>
         </div>
+        <!-- local-auto-input:end -->
         <div class="controls">
           <button id="monkey" class="animal-button monkey-button" aria-label="左のサルを選ぶ" disabled><span class="key-tag">← / A</span><img src="./art/monkey.svg" alt="" draggable="false" /><span class="button-name"><b class="animal-name">サル</b><span>LEFT</span></span></button>
           <button id="tiger" class="animal-button tiger-button" aria-label="右のトラを選ぶ" disabled><span class="key-tag">→ / D</span><img src="./art/tiger.svg" alt="" draggable="false" /><span class="button-name"><b class="animal-name">トラ</b><span>RIGHT</span></span></button>
@@ -59,7 +61,9 @@
           <button class="primary-button" id="start" disabled><span>読み込み中…</span><svg viewBox="0 0 24 24"><path d="M5 12H19M13 6L19 12L13 18"/></svg></button>
           <div class="title-best">自己ベスト <strong id="title-best">0</strong> <span>pt</span></div>
           <button class="text-button ranking-open title-ranking">全国ランキングを見る</button>
+          <!-- local-auto-input:start -->
           <button class="text-button auto-input-open" id="open-auto-input" disabled>自動入力ツール</button>
+          <!-- local-auto-input:end -->
           <p class="storage-note" id="storage-note" hidden>この環境では記録を保存できません</p>
         </div>
       </section>
@@ -73,7 +77,9 @@
           <div class="result-score"><strong id="result-score">0</strong><span>pt</span></div>
           <div class="best-badge" id="new-best" hidden>自己ベスト更新</div>
           <div class="result-stats"><div><strong id="result-hits">0</strong><span>正解</span></div><div><strong id="result-combo">0</strong><span>最大コンボ</span></div><div><strong id="result-accuracy">0%</strong><span>正解率</span></div></div>
+          <!-- local-auto-input:start -->
           <p id="result-auto-input" hidden></p>
+          <!-- local-auto-input:end -->
           <div class="result-best">自己ベスト <strong id="result-best">0</strong><span>pt</span></div>
           <div class="result-ranking" id="result-ranking">
             <form id="ranking-form" hidden>
@@ -99,6 +105,7 @@
         <p class="dialog-small">画面を離れるとプレイは終了します。<br />中断したスコアは自己ベストに記録されません。</p>
         <form method="dialog"><button class="primary-button">とじる</button></form>
       </dialog>
+      <!-- local-auto-input:start -->
       <dialog id="auto-input-dialog" aria-labelledby="auto-input-heading">
         <form method="dialog"><div class="dialog-heading"><h2 id="auto-input-heading">自動入力ツール</h2><button class="icon-button" aria-label="自動入力ツールを閉じる">×</button></div></form>
         <p class="auto-input-description">最下段を見て、正解側のボタンを自動で押します。40秒間の得点と入力速度を測定できます。</p>
@@ -108,6 +115,7 @@
         <p class="dialog-small">自動入力の記録は自己ベスト・全国ランキングに保存されません。</p>
         <button id="start-auto-input" class="primary-button" type="button">自動入力を開始</button>
       </dialog>
+      <!-- local-auto-input:end -->
       <dialog id="ranking-dialog" aria-labelledby="ranking-heading">
         <form method="dialog"><div class="dialog-heading"><h2 id="ranking-heading">全国ランキング</h2><button class="icon-button" aria-label="ランキングを閉じる">×</button></div></form>
         <div class="ranking-tabs" role="tablist" aria-label="ランキングの種類"><button id="ranking-tab-all" type="button" role="tab" aria-selected="true" aria-controls="ranking-panel" data-category="all">全体</button><button id="ranking-tab-mobile" type="button" role="tab" aria-selected="false" aria-controls="ranking-panel" tabindex="-1" data-category="mobile">スマホ</button><button id="ranking-tab-pc" type="button" role="tab" aria-selected="false" aria-controls="ranking-panel" tabindex="-1" data-category="pc">PC</button></div>
