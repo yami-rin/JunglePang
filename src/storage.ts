@@ -1,4 +1,5 @@
 import { validSelection, type AnimalSelection } from './animals';
+import { validAutoInputRate, type AutoInputRate } from './auto-input';
 export const STORAGE_KEY = "jungle-pang:v1";
 export interface Preferences {
   best: number;
@@ -7,6 +8,7 @@ export interface Preferences {
   music: boolean;
   randomAnimals: boolean;
   autoReset: boolean;
+  autoInputRate: AutoInputRate;
   animals: AnimalSelection;
 }
 export interface StorageLike {
@@ -20,6 +22,7 @@ const defaults: Preferences = {
   music: true,
   randomAnimals: true,
   autoReset: false,
+  autoInputRate: 60,
   animals: { left: 'monkey', right: 'elephant' },
 };
 
@@ -46,6 +49,7 @@ export class PangStorage {
       if (typeof v.music === "boolean") this.value.music = v.music;
       if (typeof v.randomAnimals === 'boolean') this.value.randomAnimals = v.randomAnimals;
       if (typeof v.autoReset === 'boolean') this.value.autoReset = v.autoReset;
+      if (validAutoInputRate(v.autoInputRate)) this.value.autoInputRate = v.autoInputRate;
       if (validSelection(v.animals)) this.value.animals = { ...v.animals };
     } catch {
       this.available = false;

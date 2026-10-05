@@ -9,6 +9,7 @@ import { JungleScene } from "./scene";
 import { ANIMALS, roundAnimals, artURL } from './animals';
 import { RankingClient, type RankedRound } from './ranking';
 import { CATEGORY_LABELS, type RankingCategory } from './platform';
+import { AutoInput, AUTO_INPUT_RATES, rateLabel } from './auto-input';
 
 const releaseViewport=bindViewport();
 const el = <T extends HTMLElement = HTMLElement>(id: string) => {
@@ -53,6 +54,9 @@ const storage = new PangStorage(backend);
 const audio = new PangAudio(storage.value);
 const ranking = new RankingClient(backend);
 const debugMode = new URLSearchParams(location.search).get('debug') === '1';
+const autoInput = new AutoInput();
+let automatedRound = false;
+let autoInputRate = storage.value.autoInputRate;
 let rankedRound: RankedRound | null = null;
 let roundEpoch = 0;
 let rankingReason = '';
@@ -145,6 +149,9 @@ function setScreen(value: typeof screen): void {
   ui.monkey.disabled = value !== "playing";
   ui.tiger.disabled = value !== "playing";
   ui.hint.hidden = value !== "playing";
+  ui.hint.querySelector('span')!.textContent = automatedRound ? '自動入力中' : '最下段と同じボタン';
+  el('auto-input-controls').hidden = !automatedRound || value !== 'playing';
+  el('play-hint').hidden = automatedRound && value === 'playing';
   el('quick-retry').hidden = value !== 'playing' && value !== 'countdown';
   if (value !== 'countdown') delete ui.app.dataset.preparing;
 }
@@ -199,8 +206,10 @@ function resetRound(seed: number, animalSeed = seed): void {
   }
   ui.feedback.classList.remove("show");
 }
-async function startRound(): Promise<void> {
+async function startRound(automated = false): Promise<void> {
   if (screen === "loading") return;
+  autoInput.stop();
+  automatedRound = automated;
   audio.unlock();
   audio.stopAll();
   const epoch = ++roundEpoch;
@@ -216,7 +225,7 @@ async function startRound(): Promise<void> {
   updateHud(performance.now());
   ui.start.blur();
   el("retry").blur();
-  if (!debugMode) {
+  if (!debugMode && !automatedRound) {
     let timeout: ReturnType<typeof setTimeout> | undefined;
     try {
       // Choose the seed before showing the tower. A late response cannot replace it.
@@ -243,6 +252,7 @@ async function startRound(): Promise<void> {
   scheduleFrame();
 }
 function autoResetRound(now: number): void {
+  autoInput.stop();
   roundEpoch++;
   audio.stopAll();
   const next = nextAttempt(attemptBaseSeed, attemptIndex, initialQueue, engine.queue);
@@ -259,8 +269,11 @@ function autoResetRound(now: number): void {
   audio.startMusic();
   updateHud(now);
   scheduleFrame();
+  if (automatedRound) startAutoInput();
 }
 function showTitle(): void {
+  autoInput.stop();
+  automatedRound = false;
   roundEpoch++;
   rankedRound = null;
   audio.stopAll();
@@ -279,6 +292,7 @@ function showTitle(): void {
 }
 function endRound(): void {
   if (screen !== "playing" || !engine.result) return;
+  autoInput.stop();
   audio.stopMusic();
   audio.finish();
   endingAt = performance.now();
@@ -291,7 +305,7 @@ function endRound(): void {
   ui.feedback.classList.add("show");
   updateHud(endingAt);
   const result = engine.result;
-  const newBest = result.eligible && result.score > storage.value.best;
+  const newBest = !automatedRound && result.eligible && result.score > storage.value.best;
   if (!savedResult) {
     if (newBest) storage.update({ best: result.score });
     savedResult = true;
@@ -302,12 +316,14 @@ function endRound(): void {
   el("result-accuracy").textContent = `${Math.round(result.accuracy * 100)}%`;
   el("new-best").hidden = !newBest;
   el("result-heading").textContent =
-    result.reason === "time" ? "結果" : "プレイを中断しました";
+    automatedRound ? '自動入力の結果' : result.reason === "time" ? "結果" : "プレイを中断しました";
+  el('result-auto-input').hidden = !automatedRound;
+  el('result-auto-input').textContent = automatedRound ? `実測 ${(result.hits / Math.max(.001, result.elapsedMs / 1000)).toFixed(1)}回/秒 · ${(result.elapsedMs / 1000).toFixed(1)}秒` : '';
   el('result-message').hidden = result.eligible;
   el('result-message').textContent = result.eligible ? '' : '中断した記録は自己ベストに保存されません';
-  el('ranking-form').hidden = !result.eligible || !rankedRound || result.score === 0;
+  el('ranking-form').hidden = automatedRound || !result.eligible || !rankedRound || result.score === 0;
   el<HTMLButtonElement>('submit-score').disabled = false;
-  el('ranking-status').textContent = !result.eligible ? '中断した記録はランキングに登録できません' : result.score === 0 ? '1回以上正解すると登録できます' : rankingReason || `全体・${CATEGORY_LABELS[rankedRound?.device ?? 'pc']}ランキングに登録できます`;
+  el('ranking-status').textContent = automatedRound ? '自動入力の記録は自己ベスト・全国ランキングに保存されません' : !result.eligible ? '中断した記録はランキングに登録できません' : result.score === 0 ? '1回以上正解すると登録できます' : rankingReason || `全体・${CATEGORY_LABELS[rankedRound?.device ?? 'pc']}ランキングに登録できます`;
   updateBest();
 }
 function presentResult(): void {
@@ -329,6 +345,7 @@ function frame(): void {
       audio.start();
       audio.startMusic();
       updateHud(now);
+      if (automatedRound) startAutoInput();
     } else if (stage !== countdownStage) {
       countdownStage = stage;
       ui.countdown.textContent = String(3 - stage);
@@ -374,14 +391,54 @@ function input(animal: Animal): void {
   updateHud(now);
 }
 
+function startAutoInput(): void {
+  autoInput.start(autoInputRate, () => {
+    if (!automatedRound || screen !== 'playing' || document.hidden || ui.settings.open) return false;
+    const target = scene.target();
+    if (!target) return false;
+    // Use the same native button activation and scoring path as manual input.
+    ui[target].click();
+    return screen === 'playing';
+  });
+}
+const autoInputDialog = el<HTMLDialogElement>('auto-input-dialog');
+for (const id of ['auto-input-rate', 'auto-input-live-rate']) {
+  const select = el<HTMLSelectElement>(id);
+  for (const rate of AUTO_INPUT_RATES) {
+    const option = document.createElement('option');
+    option.value = String(rate);
+    option.textContent = rateLabel(rate);
+    select.append(option);
+  }
+  select.value = String(autoInputRate);
+  select.addEventListener('change', () => {
+    autoInputRate = AUTO_INPUT_RATES.find(rate => String(rate) === select.value) ?? 60;
+    storage.update({autoInputRate});
+    for (const other of ['auto-input-rate', 'auto-input-live-rate']) el<HTMLSelectElement>(other).value = String(autoInputRate);
+    if (automatedRound && screen === 'playing') startAutoInput();
+  });
+}
+el('open-auto-input').addEventListener('click', () => autoInputDialog.showModal());
+el('start-auto-input').addEventListener('click', () => {
+  autoInputDialog.close();
+  void startRound(true);
+});
+el('stop-auto-input').addEventListener('click', () => {
+  if (automatedRound && screen === 'playing') {
+    engine.finish('quit', performance.now());
+    endRound();
+    presentResult();
+  }
+});
+
 bindInputs(
   { monkey: ui.monkey, tiger: ui.tiger },
   () => screen === "playing" && !ui.settings.open,
   input,
 );
-ui.start.addEventListener("click", startRound);
-el('quick-retry').addEventListener('click', startRound);
-el("retry").addEventListener("click", startRound);
+ui.start.addEventListener("click", () => void startRound());
+el('quick-retry').addEventListener('click', () => void startRound(automatedRound));
+el("retry").addEventListener("click", () => void startRound(automatedRound));
 el("back-to-title").addEventListener("click", showTitle);
 el("home").addEventListener("click", () => {
   if (screen === "playing") {
@@ -470,7 +527,7 @@ for (const button of document.querySelectorAll('.ranking-open')) button.addEvent
 el('refresh-ranking').addEventListener('click',()=>void loadRanking());
 el('ranking-form').addEventListener('submit',event=>{
   event.preventDefault();
-  if (!rankedRound || !engine.result?.eligible) return;
+  if (automatedRound || !rankedRound || !engine.result?.eligible) return;
   const round = rankedRound; const currentEngine = engine;
   const button = el<HTMLButtonElement>('submit-score');
   if (button.disabled) return;
@@ -546,9 +603,11 @@ window.addEventListener("blur", () => {
 scene.onReady = () => {
   scene.sync(engine.queue);
   ui.start.disabled = false;
+  el<HTMLButtonElement>('open-auto-input').disabled = false;
   ui.start.querySelector("span")!.textContent = "スタート";
   setScreen("ready");
   updateHud(performance.now());
+  if (new URLSearchParams(location.search).get('tool') === 'auto-input') autoInputDialog.showModal();
 };
 scene.onFailure = () => {
   el("fatal-error").hidden = false;
@@ -584,6 +643,8 @@ if (new URLSearchParams(location.search).get("debug") === "1") {
         tower: scene.tower(),
       }),
       reset: (seed = 1) => {
+        autoInput.stop();
+        automatedRound = false;
         roundEpoch++;
         rankedRound = null;
         rankingReason = '検証モードの記録は全国に登録できません';
@@ -620,6 +681,7 @@ if (import.meta.hot)
     releaseViewport();
     resize.disconnect();
     audio.stopAll();
+    autoInput.stop();
     cancelAnimationFrame(scheduledFrame);
     scene.destroy();
   });

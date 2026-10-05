@@ -20,6 +20,15 @@
 .tower-stack { position: absolute; inset: 0; pointer-events: none; }
 #game-canvas { isolation: isolate; }
 .title-ranking { font-size: 12px; padding: 7px; margin-top: 4px; }
+.auto-input-open { min-height: 44px; font-size: 12px; }
+.auto-input-description { font-size: 12px; line-height: 1.8; margin: 14px 0; }
+.auto-input-rate-label { display: block; font-size: 13px; font-weight: 700; margin: 18px 0 8px; }
+#auto-input-rate { width: 100%; padding: 12px; border: 1px solid #78995d; border-radius: 10px; background: #fff9df; color: var(--ink); font-size: 16px; }
+.auto-input-controls { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 8px; }
+.auto-input-controls label { display: flex; flex: 1; min-width: 0; align-items: center; gap: 8px; font-size: 12px; white-space: nowrap; }
+#auto-input-live-rate { flex: 1; min-width: 0; max-width: 180px; min-height: 44px; padding: 6px; background: #fff9df; color: var(--ink); border: 1px solid #78995d; border-radius: 9px; font-size: 16px; }
+#stop-auto-input { flex-shrink: 0; min-height: 44px; padding: 10px 16px; border-radius: 10px; background: #315c40; color: #fff8db; font-size: 13px; font-weight: 700; }
+#result-auto-input { font-size: 12px; line-height: 1.8; margin: 8px 0; }
 .result-ranking { margin: 10px 0 12px; }
 .result-ranking label { display: block; font-size: 10px; text-align: left; margin-bottom: 6px; }
 .ranking-submit-row { display: flex; gap: 6px; }
@@ -98,7 +107,8 @@ body {
   overflow: hidden;
 }
 button,
-input {
+input,
+select {
   font: inherit;
 }
 button {
@@ -109,7 +119,8 @@ button:disabled {
   cursor: default;
 }
 button:focus-visible,
-input:focus-visible {
+input:focus-visible,
+select:focus-visible {
   outline: 3px solid #1d6753;
   outline-offset: 4px;
 }
