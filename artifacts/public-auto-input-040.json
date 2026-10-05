@@ -1,0 +1,105 @@
+{
+  "url": "https://yami-rin.github.io/JunglePang/",
+  "codeCommit": "70b9d898b0e10a33a0ec485e3b45888a849da8fc",
+  "files": [
+    {
+      "path": "art/chick.svg",
+      "bytes": 803,
+      "sha256": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d"
+    },
+    {
+      "path": "art/elephant.svg",
+      "bytes": 1040,
+      "sha256": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816"
+    },
+    {
+      "path": "art/favicon.svg",
+      "bytes": 208,
+      "sha256": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac"
+    },
+    {
+      "path": "art/frog.svg",
+      "bytes": 825,
+      "sha256": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d"
+    },
+    {
+      "path": "art/hippo.svg",
+      "bytes": 805,
+      "sha256": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f"
+    },
+    {
+      "path": "art/jungle.svg",
+      "bytes": 2710,
+      "sha256": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c"
+    },
+    {
+      "path": "art/monkey.svg",
+      "bytes": 1437,
+      "sha256": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1"
+    },
+    {
+      "path": "art/tiger.svg",
+      "bytes": 1430,
+      "sha256": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d"
+    },
+    {
+      "path": "assets/index-DubnOdvY.js",
+      "bytes": 36886,
+      "sha256": "7f470bbb3846cb799cfa3ee4a6931399e8acbd5f4fc68500afa5e592333271b0"
+    },
+    {
+      "path": "assets/index-szxxS5Gt.css",
+      "bytes": 21984,
+      "sha256": "fb988759ad44f4e52160d37dfe9745e4e08ac91f3566f56fe3bbc0b1708be360"
+    },
+    {
+      "path": "index.html",
+      "bytes": 13300,
+      "sha256": "655599c6d90952fe35595d1fe1914e4238882ae90126332bce95cc731008c680"
+    }
+  ],
+  "actionsRun": "https://github.com/yami-rin/JunglePang/actions/runs/37317715777",
+  "publicTests": {
+    "passed": 12,
+    "failed": 0
+  },
+  "browserEmulation": true,
+  "runs": [
+    {
+      "project": "desktop-chromium",
+      "url": "https://yami-rin.github.io/JunglePang/?tool=auto-input",
+      "rate": "max",
+      "hits": 8084,
+      "activations": 8085,
+      "score": 322340,
+      "actualRate": 202.1,
+      "tapSpanMs": 39994.09999999404,
+      "apiRequests": [],
+      "errors": []
+    },
+    {
+      "project": "mobile-chromium",
+      "url": "https://yami-rin.github.io/JunglePang/?tool=auto-input",
+      "rate": "max",
+      "hits": 8093,
+      "activations": 8094,
+      "score": 322700,
+      "actualRate": 202.325,
+      "tapSpanMs": 39996.30000001192,
+      "apiRequests": [],
+      "errors": []
+    },
+    {
+      "project": "mobile-webkit",
+      "url": "https://yami-rin.github.io/JunglePang/?tool=auto-input",
+      "rate": "max",
+      "hits": 2592,
+      "activations": 2593,
+      "score": 102660,
+      "actualRate": 64.8,
+      "tapSpanMs": 39991,
+      "apiRequests": [],
+      "errors": []
+    }
+  ]
+}
