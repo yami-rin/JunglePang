@@ -1,0 +1,72 @@
+{
+  "url": "https://yami-rin.github.io/JunglePang/",
+  "codeCommit": "5987a0136a278b7b46eaae74f830475003157337",
+  "actionsRun": "https://github.com/yami-rin/JunglePang/actions/runs/37321058904",
+  "automationExcluded": true,
+  "files": [
+    {
+      "path": "art/chick.svg",
+      "bytes": 803,
+      "sha256": "befd9869e3455670f7b5fa0b73d2b9fd3fb250c12669742a736557edd217bc4d"
+    },
+    {
+      "path": "art/elephant.svg",
+      "bytes": 1040,
+      "sha256": "a24712c71ec3eeac3b4550b2c33b3c29ea30c8aada773000930c9eca925e7816"
+    },
+    {
+      "path": "art/favicon.svg",
+      "bytes": 208,
+      "sha256": "5bf89551bd98c19a3e900e66983bea0edc1afb6152310983d74eeefd77c7dfac"
+    },
+    {
+      "path": "art/frog.svg",
+      "bytes": 825,
+      "sha256": "1c23bb1543911cbcb2b0353f9447cbd807a7c7d293e6c085fd2de453f5c6781d"
+    },
+    {
+      "path": "art/hippo.svg",
+      "bytes": 805,
+      "sha256": "33aa73257219e98382b9be8ef48d260e8bb5f98007e1425e444f574ee443cc9f"
+    },
+    {
+      "path": "art/jungle.svg",
+      "bytes": 2710,
+      "sha256": "9e95f867f01ea7ec7c5d18f902a25a61603ea6563c8576cac3b65fb11113426c"
+    },
+    {
+      "path": "art/monkey.svg",
+      "bytes": 1437,
+      "sha256": "a954ccc62bf1c5482f2e5600656937c24cec489f8edea0e03b4ce1962b7cb0b1"
+    },
+    {
+      "path": "art/tiger.svg",
+      "bytes": 1430,
+      "sha256": "8d59176bb4c70e27932afd8e01e48e6dcc94dfcee116b3ca69687cffd1b7367d"
+    },
+    {
+      "path": "assets/index-BKxKfaop.css",
+      "bytes": 21026,
+      "sha256": "972b7a59f520b12bdb59cb30b4ea6dfe9e069d84ca9768700bfed058330235df"
+    },
+    {
+      "path": "assets/index-DIw4Zw25.js",
+      "bytes": 34733,
+      "sha256": "a4cc72a9bbfe93a653a769b85f8c5d8f58296d41f3a9c3ca05694bb339ae790d"
+    },
+    {
+      "path": "index.html",
+      "bytes": 11810,
+      "sha256": "afc1b8468ff090627366a6c281320211dba0a46d76c594c8e17f39e181eb22ca"
+    }
+  ],
+  "publicTests": {
+    "passed": 6,
+    "failed": 0,
+    "projects": [
+      "desktop-chromium",
+      "mobile-chromium",
+      "mobile-webkit"
+    ]
+  }
+}
