@@ -2,6 +2,7 @@ import { test, expect, type Page } from '@playwright/test';
 import config from '../../src/ranking-config.json' with {type:'json'};
 import { PangEngine, RULES_VERSION } from '../../src/engine';
 import { AUTO_RESET_VERSION, attemptSeed } from '../../src/attempt';
+import { ANIMALS } from '../../src/animals';
 
 test.use({trace:'off'});
 const towerImages=(page:Page)=>page.locator('.tower-piece').evaluateAll(nodes=>nodes.map(node=>(node as HTMLImageElement).src));
@@ -86,6 +87,7 @@ test('AutoReset persists and immediately replaces the tower and resets clock and
 test('repeated resets preserve the selected pair and suppress held fingers and compatibility clicks',async({page})=>{
   await page.addInitScript(()=>localStorage.setItem('jungle-pang:v1',JSON.stringify({autoReset:true,randomAnimals:false,animals:{left:'frog',right:'chick'}})));
   await page.goto('./?debug=1');
+  await expect(page.locator('#start')).toBeEnabled();
   await page.evaluate(()=>window.__pang.reset(1));
   const original=await snapshot(page);
   for(let i=0;i<25;i++) {
@@ -126,7 +128,10 @@ test('each AutoReset builds a different tower after different lengths of native 
     expect(after.queue).not.toEqual(previousInitial);
     expect(after.queue).not.toEqual(before.queue);
     expect(after.renderTarget).toBe(after.queue[0]);
-    expect((await towerImages(page)).map(url=>new URL(url).pathname.split('/').at(-1))).toEqual(after.queue.map(animal=>after.animals[animal].id+'.svg'));
+    expect((await towerImages(page)).map(url=>new URL(url).pathname.split('/').at(-1))).toEqual(after.queue.map(animal=>{
+      const art=ANIMALS.find(art=>art.id===after.animals[animal].id)!;
+      return art.image ?? `${art.id}.svg`;
+    }));
     previousInitial=after.queue;
     expect(after.tower.every(piece=>Math.abs(piece.y-piece.restY)<1)).toBe(true);
   }
