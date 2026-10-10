@@ -131,7 +131,7 @@ function updatePreferences(): void {
   ui.volumeValue.textContent = `${ui.volume.value}%`;
   ui.music.checked = storage.value.music;
   ui.autoReset.checked = storage.value.autoReset;
-  el('play-hint').textContent = storage.value.autoReset ? 'AutoReset ON · ミスで最初から' : '最下段と同じ動物のボタンを押す';
+  el('play-hint').textContent = storage.value.autoReset ? 'AutoReset ON · ミスで最初から' : '最下段と同じキャラのボタンを押す';
   el('howto-foot').textContent = storage.value.autoReset ? '制限時間40秒 · ミスで即リセット' : '制限時間40秒 · ミスで0.65秒間入力停止';
   showStorageStatus();
 }

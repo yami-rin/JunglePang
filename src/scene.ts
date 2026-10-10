@@ -2,7 +2,7 @@ import type { Animal } from './engine';
 import { DEFAULT_RULES } from './engine';
 import { ANIMALS, artURL, roundAnimals, type AnimalArt } from './animals';
 
-/** Six SVG images; compositor animations run only when something changes. */
+/** SVG art is preloaded; compositor animations run only when something changes. */
 export class JungleScene {
   private pieces: HTMLImageElement[] = [];
   private particles: HTMLSpanElement[] = [];

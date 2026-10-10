@@ -8,9 +8,28 @@ export const ANIMALS: readonly AnimalArt[] = [
   { id: 'frog', name: 'カエル', color: '#43a750', light: '#d2f4b5' },
   { id: 'hippo', name: 'カバ', color: '#9662c9', light: '#ead8ff' },
   { id: 'chick', name: 'ヒヨコ', color: '#eed03a', light: '#fff3ab' },
+  { id: 'ema', name: 'エマ', color: '#dd759b', light: '#ffe5ef' },
+  { id: 'hiro', name: 'ヒロ', color: '#9d4057', light: '#f7dfe5' },
+  { id: 'annan', name: 'アンアン', color: '#617bb7', light: '#e4eafa' },
+  { id: 'noah', name: 'ノア', color: '#4ca7b2', light: '#ddf4f4' },
+  { id: 'reia', name: 'レイア', color: '#ae8867', light: '#f3e8d9' },
+  { id: 'miria', name: 'ミリア', color: '#d5a755', light: '#fff1d4' },
+  { id: 'margo', name: 'マーゴ', color: '#73548e', light: '#eee3f5' },
+  { id: 'nanoka', name: 'ナノカ', color: '#666b81', light: '#e6e8f0' },
+  { id: 'arisa', name: 'アリサ', color: '#8d5265', light: '#f1dfe7' },
+  { id: 'sherie', name: 'シェリー', color: '#3985bd', light: '#dfedf9' },
+  { id: 'hanna', name: 'ハンナ', color: '#89a262', light: '#edf2dc' },
+  { id: 'koko', name: 'ココ', color: '#d4784f', light: '#f9e7db' },
+  { id: 'meruru', name: 'メルル', color: '#9da8c9', light: '#edf0fa' },
 ];
-// Separate hues AND silhouettes. Avoid brown/orange and orange/yellow pairings.
-const PAIRS = [[0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,4],[2,5],[3,4],[4,5]] as const;
+// Keep random pairs easy to distinguish at game speed. Explicit selection may use any two different characters.
+const PAIRS = [
+  [0,2],[0,3],[0,4],[1,2],[1,3],[1,4],[2,4],[2,5],[3,4],[4,5],
+  [6,3],[6,2], [7,2],[7,5], [8,5],[8,3], [9,0],[9,4],
+  [10,3],[10,2], [11,2],[11,4], [12,5],[12,3], [13,3],[13,5],
+  [14,2],[14,5], [15,0],[15,4], [16,4],[16,2], [17,2],[17,4],
+  [18,1],[18,3],
+] as const;
 export function validSelection(value: unknown): value is AnimalSelection {
   if (!value || typeof value !== 'object') return false;
   const pair = value as AnimalSelection;

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 132">
+<ellipse cx="100" cy="124" rx="66" ry="6" fill="#143d30" opacity=".13"/>
+<path d="M35 78Q32 29 77 20Q101 11 126 20Q168 29 165 78Q163 120 101 122Q37 122 35 78Z" fill="#d9b19f" stroke="#856c66" stroke-width="4" stroke-linejoin="round"/>
+<path d="M42 81Q43 42 100 38Q157 42 158 81Q155 117 100 120Q45 117 42 81Z" fill="#fff2e9" stroke="#856c66" stroke-width="3"/>
+<path d="M41 78Q33 94 51 112L62 99L59 65M159 78Q167 94 149 112L138 99L141 65" fill="#efd1bd" stroke="#856c66" stroke-width="3" stroke-linejoin="round"/>
+<path d="M38 51Q55 14 100 19Q147 15 163 54Q145 48 134 36Q121 59 106 61L102 37Q86 61 72 61L67 40Z" fill="#d9b19f" stroke="#856c66" stroke-width="3.5" stroke-linejoin="round"/>
+<ellipse cx="71" cy="78" rx="7" ry="9" fill="#80a44e"/><ellipse cx="129" cy="78" rx="7" ry="9" fill="#80a44e"/>
+<circle cx="73" cy="75" r="2" fill="#fff9ee"/><circle cx="131" cy="75" r="2" fill="#fff9ee"/>
+<ellipse cx="59" cy="95" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/><ellipse cx="141" cy="95" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/>
+<path d="M93 102Q100 108 107 102" fill="none" stroke="#78565c" stroke-width="3" stroke-linecap="round"/>
+<path d="M38 31Q52 5 99 8Q145 4 163 32" fill="none" stroke="#5d744b" stroke-width="10"/><circle cx="55" cy="21" r="9" fill="#c7a65b" stroke="#81684e" stroke-width="3"/><g transform="translate(143 25)" stroke="#57475a" stroke-width="2"><circle cx="-6" cy="0" r="5" fill="#e6bd67"/><circle cx="6" cy="0" r="5" fill="#e6bd67"/><circle cx="0" cy="-6" r="5" fill="#e6bd67"/><circle cx="0" cy="6" r="5" fill="#e6bd67"/><circle r="4" fill="#f5e3a5"/></g><g transform="translate(73 13)" stroke="#57475a" stroke-width="2"><circle cx="-6" cy="0" r="5" fill="#e4dfcf"/><circle cx="6" cy="0" r="5" fill="#e4dfcf"/><circle cx="0" cy="-6" r="5" fill="#e4dfcf"/><circle cx="0" cy="6" r="5" fill="#e4dfcf"/><circle r="4" fill="#8daa65"/></g><path d="M41 81Q27 95 41 116M159 81Q173 95 159 116" fill="none" stroke="#b99582" stroke-width="9"/>
+</svg>

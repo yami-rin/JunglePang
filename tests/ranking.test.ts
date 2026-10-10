@@ -4,7 +4,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { handle, replay, nickname, type Database } from '../api/worker';
 import { PangEngine, RULES_VERSION } from '../src/engine';
 import { AUTO_RESET_VERSION, attemptSeed, nextAttempt } from '../src/attempt';
-import { roundAnimals } from '../src/animals';
+import { ANIMALS, roundAnimals } from '../src/animals';
 import { deviceType } from '../src/platform';
 import {NAME_POLICY_VERSION,NG_NAME_MESSAGE} from '../src/name-policy';
 
@@ -188,7 +188,7 @@ describe('distinct random animals',()=>{
       expect(pair.monkey.color).not.toBe(pair.tiger.color);
       pairs.add(pair.monkey.id+':'+pair.tiger.id); animals.add(pair.monkey.id); animals.add(pair.tiger.id);
     }
-    expect(animals.size).toBe(6); expect(pairs.size).toBeGreaterThan(10);
+    expect(animals.size).toBe(ANIMALS.length); expect(pairs.size).toBeGreaterThan(10);
   });
   it('uses the chosen pair independently of the random seed and falls back for invalid pairs',()=>{
     for (const seed of [1,42,98765]) expect(roundAnimals(seed,{left:'frog',right:'hippo'})).toMatchObject({monkey:{id:'frog'},tiger:{id:'hippo'}});
