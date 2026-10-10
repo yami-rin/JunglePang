@@ -5,6 +5,33 @@ import { resolve, dirname } from 'node:path';
 // Original, small-format mascot drawings based on the local character portraits.
 // All details stay inside the same 200 x 132 frame used by the animal art.
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../public/art');
+const emaSvg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 132">
+<ellipse cx="100" cy="125" rx="64" ry="5" fill="#143d30" opacity=".13"/>
+<!-- The head and the hair form one broad, stackable silhouette. -->
+<path d="M33 63Q27 57 39 50Q42 29 70 23Q95 10 127 21Q151 23 163 44Q171 51 166 62Q177 70 165 77Q169 95 151 109Q139 123 101 123Q60 125 45 109Q27 94 35 76Q24 69 33 63Z" fill="#eee9ed" stroke="#30272d" stroke-width="4" stroke-linejoin="round"/>
+<path d="M40 77Q43 48 78 41Q112 30 145 48Q159 60 158 85Q154 119 100 120Q46 117 40 77Z" fill="#fff1eb"/>
+<path d="M34 76Q31 95 45 108Q51 110 53 96L62 100Q66 116 79 121Q62 121 47 112Q30 105 34 76Z" fill="#ee84a3"/>
+<path d="M166 74Q172 93 154 111Q142 122 125 120Q139 111 141 98L151 95Q153 108 159 103Q166 91 166 74Z" fill="#ee84a3"/>
+<path d="M33 64Q49 52 45 42Q58 23 89 21Q116 16 142 34Q158 43 167 61Q156 62 151 54L148 77Q140 70 135 57L128 69L121 62L116 82L105 72L99 83L87 72L80 82L72 69L61 81L55 68Q48 78 34 76Q27 72 33 64Z" fill="#f1edef" stroke="#30272d" stroke-width="3.5" stroke-linejoin="round"/>
+<path d="M58 39Q50 53 51 61M78 29Q71 44 72 54M107 25Q111 44 104 54M130 37Q137 45 138 54" fill="none" stroke="#d7cad5" stroke-width="3" stroke-linecap="round"/>
+<path d="M48 94Q40 105 50 112M151 96Q159 108 149 113" fill="none" stroke="#30272d" stroke-width="3" stroke-linecap="round"/>
+<path d="M59 83Q69 71 81 82M117 82Q130 71 141 84" fill="none" stroke="#553d4a" stroke-width="3" stroke-linecap="round"/>
+<ellipse cx="72" cy="88" rx="9" ry="11" fill="#bd4d68"/><ellipse cx="128" cy="88" rx="9" ry="11" fill="#bd4d68"/>
+<ellipse cx="72" cy="88" rx="6" ry="9" fill="#e87898"/><ellipse cx="128" cy="88" rx="6" ry="9" fill="#e87898"/>
+<circle cx="75" cy="83" r="3" fill="#fff8f4"/><circle cx="131" cy="83" r="3" fill="#fff8f4"/>
+<ellipse cx="51" cy="101" rx="10" ry="5" fill="#f2a9ad" opacity=".8"/><ellipse cx="149" cy="101" rx="10" ry="5" fill="#f2a9ad" opacity=".8"/>
+<path d="M93 107Q100 113 107 107" fill="none" stroke="#ab5264" stroke-width="3" stroke-linecap="round"/>
+<!-- Flat tilted beret, two flowers, and the large cross pin. -->
+<path d="M71 29Q67 13 82 7Q103 -2 133 9Q153 15 158 28Q166 38 158 54Q153 44 143 41Q136 31 112 28Q90 30 71 29Z" fill="#34383c" stroke="#30272d" stroke-width="4" stroke-linejoin="round"/>
+<path d="M86 11Q118 4 143 21" fill="none" stroke="#515155" stroke-width="4" stroke-linecap="round"/>
+<g stroke="#30272d" stroke-width="2.5" stroke-linejoin="round">
+<path d="M139 24Q128 19 132 11Q139 7 145 17Q151 8 158 13Q164 19 156 25Q167 28 165 35Q161 41 151 34Q149 43 142 42Q135 39 139 32Q128 34 126 28Q126 23 139 24Z" fill="#fff6f4"/>
+<circle cx="146" cy="26" r="5" fill="#f1a4bc"/>
+<path d="M160 34Q156 30 159 27Q164 25 166 31Q171 28 174 32Q176 36 170 39Q173 43 169 46Q165 48 162 42Q158 45 155 42Q154 38 160 34Z" fill="#fff6f4"/>
+<circle cx="165" cy="36" r="3" fill="#f1a4bc"/>
+</g>
+<path d="M143 51L156 66M156 51L143 66" fill="none" stroke="#30272d" stroke-width="5" stroke-linecap="round"/>
+</svg>\n`;
 const flower = (x, y, petal, center = '#f0b265') => `<g transform="translate(${x} ${y})" stroke="#57475a" stroke-width="2"><circle cx="-6" cy="0" r="5" fill="${petal}"/><circle cx="6" cy="0" r="5" fill="${petal}"/><circle cx="0" cy="-6" r="5" fill="${petal}"/><circle cx="0" cy="6" r="5" fill="${petal}"/><circle r="4" fill="${center}"/></g>`;
 const bow = (x, y, color) => `<g transform="translate(${x} ${y})" stroke="#51404d" stroke-width="2.5" stroke-linejoin="round"><path d="M0 0Q-17-14-18 0Q-18 12 0 2Q18 12 18 0Q17-14 0 0Z" fill="${color}"/><circle r="4" fill="#fff0dc"/></g>`;
 const star = (x, y, color) => `<path d="M${x} ${y-11}L${x+3} ${y-3}L${x+11} ${y}L${x+3} ${y+3}L${x} ${y+11}L${x-3} ${y+3}L${x-11} ${y}L${x-3} ${y-3}Z" fill="${color}" stroke="#504051" stroke-width="2" stroke-linejoin="round"/>`;
@@ -25,16 +52,21 @@ const specs = [
 ];
 
 for (const c of specs) {
+  if (c.id === 'ema') {
+    writeFileSync(resolve(root, 'ema.svg'), emaSvg);
+    continue;
+  }
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 132">
 <ellipse cx="100" cy="124" rx="66" ry="6" fill="#143d30" opacity=".13"/>
-<path d="M35 78Q32 29 77 20Q101 11 126 20Q168 29 165 78Q163 120 101 122Q37 122 35 78Z" fill="${c.hair}" stroke="${c.outline}" stroke-width="4" stroke-linejoin="round"/>
-<path d="M42 81Q43 42 100 38Q157 42 158 81Q155 117 100 120Q45 117 42 81Z" fill="${c.skin}" stroke="${c.outline}" stroke-width="3"/>
-<path d="M41 78Q33 94 51 112L62 99L59 65M159 78Q167 94 149 112L138 99L141 65" fill="${c.shade}" stroke="${c.outline}" stroke-width="3" stroke-linejoin="round"/>
-<path d="${c.fringe}" fill="${c.hair}" stroke="${c.outline}" stroke-width="3.5" stroke-linejoin="round"/>
-<ellipse cx="71" cy="78" rx="7" ry="9" fill="${c.eyes}"/><ellipse cx="129" cy="78" rx="7" ry="9" fill="${c.rightEye ?? c.eyes}"/>
-<circle cx="73" cy="75" r="2" fill="#fff9ee"/><circle cx="131" cy="75" r="2" fill="#fff9ee"/>
-<ellipse cx="59" cy="95" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/><ellipse cx="141" cy="95" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/>
-${c.noMouth ? '' : '<path d="M93 102Q100 108 107 102" fill="none" stroke="#78565c" stroke-width="3" stroke-linecap="round"/>'}
+<path d="M35 78Q32 29 77 20Q101 11 126 20Q168 29 165 78Q163 120 101 122Q37 122 35 78Z" fill="${c.hair}" stroke="#372c35" stroke-width="4" stroke-linejoin="round"/>
+<path d="M42 81Q43 42 100 38Q157 42 158 81Q155 117 100 120Q45 117 42 81Z" fill="${c.skin}" stroke="#372c35" stroke-width="3"/>
+<path d="M41 78Q33 94 51 112L62 99L59 65M159 78Q167 94 149 112L138 99L141 65" fill="${c.shade}" stroke="#372c35" stroke-width="3" stroke-linejoin="round"/>
+<path d="${c.fringe}" fill="${c.hair}" stroke="#372c35" stroke-width="3.5" stroke-linejoin="round"/>
+<ellipse cx="71" cy="82" rx="9" ry="11" fill="#634550"/><ellipse cx="129" cy="82" rx="9" ry="11" fill="#634550"/>
+<ellipse cx="71" cy="82" rx="7" ry="9" fill="${c.eyes}"/><ellipse cx="129" cy="82" rx="7" ry="9" fill="${c.rightEye ?? c.eyes}"/>
+<circle cx="74" cy="78" r="2.5" fill="#fff9ee"/><circle cx="132" cy="78" r="2.5" fill="#fff9ee"/>
+<ellipse cx="58" cy="97" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/><ellipse cx="142" cy="97" rx="11" ry="6" fill="#eaa4a0" opacity=".72"/>
+${c.noMouth ? '' : '<path d="M93 105Q100 111 107 105" fill="none" stroke="#8f5262" stroke-width="3" stroke-linecap="round"/>'}
 ${c.extra}
 </svg>\n`;
   writeFileSync(resolve(root, `${c.id}.svg`), svg);
