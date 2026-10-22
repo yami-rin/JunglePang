@@ -1,6 +1,6 @@
 # まのさばキャラクターの追加
 
-人物図鑑の立ち絵をデザイン資料として、内蔵imagegenで13人の顔だけの透過PNGを新規生成し、ゲームへ組み込んだ。立ち絵の縮小・貼り付けではない。参照元は `C:\Project\MANOSABA_RESEARCH\EVIDENCE\harness_probe` の画像。立ち絵そのものは配布物に含めない。
+人物図鑑の立ち絵をデザイン資料として、内蔵imagegenで13人の顔だけの透過PNGを新規生成し、ゲームへ組み込んだ。立ち絵の縮小・貼り付けではない。参照元は `C:\Project\Manosaba\MANOSABA_RESEARCH\EVIDENCE\harness_probe` の画像。立ち絵そのものは配布物に含めない。
 
 | アセットID | 人物 | 参照画像 |
 | --- | --- | --- |
